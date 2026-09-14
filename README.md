@@ -28,7 +28,7 @@ O sistema é organizado em oito telas principais, acessíveis pelo menu lateral:
 
 **Pré-requisito:** ter o [Node.js](https://nodejs.org/) instalado.
 
-```bash
+\`\`\`bash
 # 1. Clone o repositório
 git clone https://github.com/davisiqueira2013/agro-sense.git
 
@@ -40,13 +40,13 @@ npm install
 
 # 4. Inicie o servidor de desenvolvimento
 npm run dev
-```
+\`\`\`
 
 Depois disso, acesse o endereço mostrado no terminal (geralmente `http://localhost:5173`) no navegador.
 
 ## 📁 Estrutura do projeto
 
-```
+\`\`\`
 agro-sense/
 ├── src/
 │   ├── app/
@@ -57,7 +57,7 @@ agro-sense/
 ├── index.html
 ├── package.json
 └── vite.config.ts
-```
+\`\`\`
 
 ## 📄 Licença
 
