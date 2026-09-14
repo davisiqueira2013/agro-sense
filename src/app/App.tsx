@@ -15,7 +15,7 @@ const LoginScreen = ({ onLogin }: { onLogin: () => void }) => {
         <div className="p-3 border border-[#1A2E20] rounded-xl bg-[#0C170F] mb-4 shadow-lg">
           <Leaf className="w-8 h-8 text-green-500" />
         </div>
-        <h1 className="text-3xl font-bold text-white tracking-wide font-mono">AgriManager</h1>
+        <h1 className="text-3xl font-bold text-white tracking-wide font-mono">Agro Sense</h1>
         <p className="text-[#5C8065] text-sm mt-1 font-mono">Gestão de campo inteligente</p>
       </div>
 
@@ -25,7 +25,7 @@ const LoginScreen = ({ onLogin }: { onLogin: () => void }) => {
             <label className="block text-xs font-mono text-[#5C8065] mb-2 uppercase tracking-wider">E-mail</label>
             <input 
               type="email" 
-              defaultValue="rodrigo@agrimanager.com.br"
+              defaultValue="rodrigo@agrosense.com.br"
               style={{ backgroundColor: '#08100A' }}
               className="w-full border border-[#1A2E20] text-gray-200 text-sm rounded-lg p-3 focus:outline-none focus:border-green-500 transition-colors font-mono"
             />
@@ -256,10 +256,10 @@ const UsuariosScreen = () => (
         </thead>
         <tbody className="divide-y divide-[#1A2E20]/50 text-sm font-mono">
           {[
-            { nome: 'Rodrigo Figueiredo', email: 'rodrigo@agrimanager.com.br', cargo: 'Administrador', status: 'Ativo', sigla: 'RF' },
-            { nome: 'Ana Ferreira', email: 'ana.agronoma@agrimanager.com.br', cargo: 'Engenheira Agrônoma', status: 'Ativo', sigla: 'AF' },
-            { nome: 'Carlos Mendes', email: 'carlos.op@agrimanager.com.br', cargo: 'Operador de Máquinas', status: 'Ativo', sigla: 'CM' },
-            { nome: 'José Silva', email: 'jose.silva@agrimanager.com.br', cargo: 'Consultor Externo', status: 'Inativo', sigla: 'JS' },
+            { nome: 'Rodrigo Figueiredo', email: 'rodrigo@agrosense.com.br', cargo: 'Administrador', status: 'Ativo', sigla: 'RF' },
+            { nome: 'Ana Ferreira', email: 'ana.agronoma@agrosense.com.br', cargo: 'Engenheira Agrônoma', status: 'Ativo', sigla: 'AF' },
+            { nome: 'Carlos Mendes', email: 'carlos.op@agrosense.com.br', cargo: 'Operador de Máquinas', status: 'Ativo', sigla: 'CM' },
+            { nome: 'José Silva', email: 'jose.silva@agrosense.com.br', cargo: 'Consultor Externo', status: 'Inativo', sigla: 'JS' },
           ].map((row, idx) => (
             <tr key={idx} className="hover:bg-[#122216]/30 transition-colors">
               <td className="py-4 flex items-center gap-3">
@@ -358,7 +358,7 @@ const Sidebar = ({ currentTab, setCurrentTab }: { currentTab: string, setCurrent
           <Leaf className="w-5 h-5 text-green-500" />
         </div>
         <div>
-          <h2 className="text-white font-bold text-base leading-tight font-mono">AgriManager</h2>
+          <h2 className="text-white font-bold text-base leading-tight font-mono">Agro Sense</h2>
           <p className="text-[#5C8065] text-xs font-mono">Fazenda Figueiredo</p>
         </div>
       </div>
