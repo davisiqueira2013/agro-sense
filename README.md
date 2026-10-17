@@ -2,7 +2,7 @@
 
 Protótipo de sistema web para **gestão agrícola**, desenvolvido como parte de um Projeto Integrador. A interface foi projetada no Figma e implementada em React, reunindo em um único painel as principais ferramentas que um produtor ou equipe de campo precisa no dia a dia.
 
-> ⚠️ Este é um **protótipo funcional com dados fictícios**, voltado para fins acadêmicos e de demonstração. Não há integração com backend ou banco de dados real.
+> ⚠️ **Fase 02 em andamento:** o frontend foi reorganizado para receber a integração com o backend (API REST). Enquanto a API não estiver pronta, as telas usam os dados fictícios de `src/app/data/mockData.ts`.
 
 ## 📋 Funcionalidades
 
@@ -21,14 +21,14 @@ O sistema é organizado em oito telas principais, acessíveis pelo menu lateral:
 
 - **React** + **TypeScript**
 - **Vite** — ambiente de desenvolvimento e build
-- **Tailwind CSS** — estilização
+- **Tailwind CSS v4** (plugin `@tailwindcss/vite`) — estilização
 - **shadcn/ui** — biblioteca de componentes de interface
 
 ## 🚀 Como rodar o projeto localmente
 
 **Pré-requisito:** ter o [Node.js](https://nodejs.org/) instalado.
 
-\`\`\`bash
+```bash
 # 1. Clone o repositório
 git clone https://github.com/davisiqueira2013/agro-sense.git
 
@@ -38,26 +38,39 @@ cd agro-sense
 # 3. Instale as dependências
 npm install
 
-# 4. Inicie o servidor de desenvolvimento
+# 4. Crie o arquivo de ambiente (endereço da API)
+cp .env.example .env
+
+# 5. Inicie o servidor de desenvolvimento
 npm run dev
-\`\`\`
+```
 
 Depois disso, acesse o endereço mostrado no terminal (geralmente `http://localhost:5173`) no navegador.
 
 ## 📁 Estrutura do projeto
 
-\`\`\`
+```
 agro-sense/
 ├── src/
+│   ├── main.tsx                 # Ponto de entrada
+│   ├── config.ts                # Variáveis de ambiente (VITE_API_URL)
 │   ├── app/
-│   │   ├── App.tsx          # Componente principal e telas do sistema
-│   │   └── components/      # Componentes de interface (UI)
-│   └── styles/               # Arquivos de estilo global
-├── guidelines/                # Diretrizes de design exportadas do Figma
+│   │   ├── App.tsx              # Autenticação e navegação entre telas
+│   │   ├── navigation.tsx       # Itens do menu lateral
+│   │   ├── types.ts             # Tipos de domínio (Talhao, Atividade, Insumo...)
+│   │   ├── pages/               # Uma tela por arquivo (LoginPage, DashboardPage...)
+│   │   ├── components/
+│   │   │   ├── layout/          # Sidebar e Header
+│   │   │   ├── shared/          # PageHeader, Card, DataTable, botões, Avatar
+│   │   │   └── ui/              # Componentes shadcn/ui
+│   │   ├── data/mockData.ts     # Dados fictícios (serão trocados pela API)
+│   │   └── lib/tones.ts         # Cores por status e severidade
+│   └── styles/                  # Estilos globais e tema
+├── .env.example                 # Modelo das variáveis de ambiente
 ├── index.html
 ├── package.json
-└── vite.config.ts
-\`\`\`
+└── vite.config.ts               # Vite + React + Tailwind CSS v4
+```
 
 ## 📄 Licença
 
