@@ -1,75 +1,130 @@
 # 🌱 Agro Sense
 
-Protótipo de sistema web para **gestão agrícola**, desenvolvido como parte de um Projeto Integrador. A interface foi projetada no Figma e implementada em React, reunindo em um único painel as principais ferramentas que um produtor ou equipe de campo precisa no dia a dia.
+Sistema web para **gestão agrícola**, desenvolvido como Projeto Integrador. Reúne em um único painel o que um produtor ou equipe de campo precisa no dia a dia: talhões, atividades, diário de campo, estoque de insumos, alertas climáticos, relatórios e usuários.
 
-> ⚠️ **Fase 02 em andamento:** o frontend foi reorganizado para receber a integração com o backend (API REST). Enquanto a API não estiver pronta, as telas usam os dados fictícios de `src/app/data/mockData.ts`.
+> 🚧 **Fase 02 em andamento — integração frontend e backend.** O repositório agora é um monorepo com o frontend (React) e o backend (API REST em Node.js), além do banco PostgreSQL via Docker. Enquanto os módulos da API não estiverem prontos, as telas usam os dados fictícios de `frontend/src/app/data/mockData.ts`.
+
+## 🏗️ Arquitetura
+
+```
+Navegador (React SPA)  ──HTTP + JSON / JWT──▶  API REST (Express)  ──Prisma──▶  PostgreSQL
+      frontend/                                    backend/                    docker-compose.yml
+```
+
+| Pasta | O que é | Porta |
+| --- | --- | --- |
+| `frontend/` | Interface em React + TypeScript + Vite + Tailwind CSS | 5173 |
+| `backend/` | API REST em Node.js + Express + TypeScript | 3333 |
+| `docker-compose.yml` | Banco PostgreSQL 16 para desenvolvimento | 5432 |
 
 ## 📋 Funcionalidades
 
-O sistema é organizado em oito telas principais, acessíveis pelo menu lateral:
-
-- **Dashboard** — visão geral das operações, indicadores e alertas recentes
-- **Talhões** — cadastro e acompanhamento das áreas de cultivo (cultura, área, temperatura, umidade)
-- **Atividades de Campo** — planejamento e registro de tarefas realizadas na propriedade
-- **Diário de Campo** — anotações agronômicas e observações registradas pela equipe
-- **Estoque de Insumos** — controle de entrada e saída de insumos agrícolas
-- **Alertas Climáticos** — notificações sobre condições meteorológicas que impactam a produção
-- **Relatórios** — geração de relatórios em PDF sobre as operações
-- **Usuários** — gerenciamento de contas e permissões da equipe
+- **Dashboard** — indicadores, custos e alertas recentes
+- **Talhões** — cadastro e acompanhamento das áreas de cultivo
+- **Atividades de Campo** — planejamento e registro de tarefas
+- **Diário de Campo** — anotações agronômicas da equipe
+- **Estoque de Insumos** — entradas, saídas e itens abaixo do mínimo
+- **Alertas Climáticos** — riscos meteorológicos por talhão
+- **Relatórios** — geração de relatórios em PDF
+- **Usuários** — contas e perfis de acesso
 
 ## 🛠️ Tecnologias
 
-- **React** + **TypeScript**
-- **Vite** — ambiente de desenvolvimento e build
-- **Tailwind CSS v4** (plugin `@tailwindcss/vite`) — estilização
-- **shadcn/ui** — biblioteca de componentes de interface
+| Camada | Tecnologias |
+| --- | --- |
+| Frontend | React 18, TypeScript, Vite 5, Tailwind CSS v4, shadcn/ui |
+| Backend | Node.js 22, Express, TypeScript (Prisma e JWT nas próximas etapas) |
+| Banco de dados | PostgreSQL 16 (Docker) |
 
-## 🚀 Como rodar o projeto localmente
+## ✅ Pré-requisitos
 
-**Pré-requisito:** ter o [Node.js](https://nodejs.org/) instalado.
+- [Node.js](https://nodejs.org/) 20 ou superior (recomendado: 22)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (para o banco de dados)
+- Git
+
+## 🚀 Como rodar o projeto
+
+### 1. Clonar e instalar
 
 ```bash
-# 1. Clone o repositório
 git clone https://github.com/davisiqueira2013/agro-sense.git
-
-# 2. Entre na pasta do projeto
 cd agro-sense
-
-# 3. Instale as dependências
-npm install
-
-# 4. Crie o arquivo de ambiente (endereço da API)
-cp .env.example .env
-
-# 5. Inicie o servidor de desenvolvimento
-npm run dev
+npm run install:all
 ```
 
-Depois disso, acesse o endereço mostrado no terminal (geralmente `http://localhost:5173`) no navegador.
+### 2. Criar os arquivos de ambiente
 
-## 📁 Estrutura do projeto
+```bash
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env
+```
+
+No Windows (PowerShell), use `copy` no lugar de `cp`.
+
+### 3. Subir o banco de dados
+
+Com o Docker Desktop aberto:
+
+```bash
+npm run db:up
+```
+
+O PostgreSQL fica disponível em `localhost:5432` (usuário, senha e banco: `agrosense`). Para parar: `npm run db:down`.
+
+### 4. Subir a API (terminal 1)
+
+```bash
+npm run dev:api
+```
+
+Teste em http://localhost:3333/api/health — deve responder `{"status":"ok", ...}`.
+
+### 5. Subir o frontend (terminal 2)
+
+```bash
+npm run dev:web
+```
+
+Acesse http://localhost:5173.
+
+## 📜 Scripts da raiz
+
+| Comando | O que faz |
+| --- | --- |
+| `npm run install:all` | Instala as dependências do backend e do frontend |
+| `npm run db:up` / `db:down` | Sobe / para o PostgreSQL no Docker |
+| `npm run dev:api` | API em modo desenvolvimento (recarrega ao salvar) |
+| `npm run dev:web` | Frontend em modo desenvolvimento |
+| `npm run build` | Compila backend e frontend |
+| `npm run lint` | Verifica o código do frontend com ESLint |
+
+## 📁 Estrutura do repositório
 
 ```
 agro-sense/
-├── src/
-│   ├── main.tsx                 # Ponto de entrada
-│   ├── config.ts                # Variáveis de ambiente (VITE_API_URL)
-│   ├── app/
-│   │   ├── App.tsx              # Autenticação e navegação entre telas
-│   │   ├── navigation.tsx       # Itens do menu lateral
-│   │   ├── types.ts             # Tipos de domínio (Talhao, Atividade, Insumo...)
-│   │   ├── pages/               # Uma tela por arquivo (LoginPage, DashboardPage...)
-│   │   ├── components/
-│   │   │   ├── layout/          # Sidebar e Header
-│   │   │   ├── shared/          # PageHeader, Card, DataTable, botões, Avatar
-│   │   │   └── ui/              # Componentes shadcn/ui
-│   │   ├── data/mockData.ts     # Dados fictícios (serão trocados pela API)
-│   │   └── lib/tones.ts         # Cores por status e severidade
-│   └── styles/                  # Estilos globais e tema
-├── .env.example                 # Modelo das variáveis de ambiente
-├── index.html
-├── package.json
-└── vite.config.ts               # Vite + React + Tailwind CSS v4
+├── backend/
+│   ├── src/
+│   │   ├── app.ts               # Express: CORS, JSON, rotas /api
+│   │   └── server.ts            # Sobe a API na porta 3333
+│   ├── .env.example             # PORT, CORS_ORIGIN, DATABASE_URL, JWT_SECRET
+│   ├── package.json
+│   └── tsconfig.json
+├── frontend/
+│   ├── src/
+│   │   ├── config.ts            # VITE_API_URL
+│   │   └── app/
+│   │       ├── App.tsx          # Autenticação e navegação entre telas
+│   │       ├── pages/           # Uma tela por arquivo
+│   │       ├── components/      # layout/, shared/ e ui/ (shadcn)
+│   │       ├── data/mockData.ts # Dados fictícios (serão trocados pela API)
+│   │       ├── lib/tones.ts     # Cores por status e severidade
+│   │       └── types.ts         # Tipos de domínio
+│   ├── .env.example             # VITE_API_URL
+│   ├── package.json
+│   └── vite.config.ts
+├── docker-compose.yml           # PostgreSQL
+├── package.json                 # Scripts que facilitam rodar tudo pela raiz
+└── README.md
 ```
 
 ## 📄 Licença

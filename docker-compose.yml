@@ -1,0 +1,26 @@
+# Banco de dados do Agro Sense para desenvolvimento.
+# Subir:  docker compose up -d
+# Parar:  docker compose down        (os dados ficam no volume)
+# Zerar:  docker compose down -v     (apaga os dados)
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: agrosense-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: agrosense
+      POSTGRES_PASSWORD: agrosense
+      POSTGRES_DB: agrosense
+      TZ: America/Sao_Paulo
+    ports:
+      - "5432:5432"
+    volumes:
+      - agrosense-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U agrosense -d agrosense"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  agrosense-pgdata:
