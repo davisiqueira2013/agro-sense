@@ -2,7 +2,7 @@
 
 Sistema web para **gestão agrícola**, desenvolvido como Projeto Integrador. Reúne em um único painel o que um produtor ou equipe de campo precisa no dia a dia: talhões, atividades, diário de campo, estoque de insumos, alertas climáticos, relatórios e usuários.
 
-> 🚧 **Fase 02 em andamento — integração frontend e backend.** O repositório agora é um monorepo com o frontend (React) e o backend (API REST em Node.js), além do banco PostgreSQL via Docker. Já integrados à API: **login** (JWT), **Talhões** (listar, buscar, cadastrar, editar, excluir) e **Atividades** (agendar, filtrar, iniciar, concluir, com as regras RN04 e RN05). Os demais módulos ainda usam os dados fictícios de `frontend/src/app/data/mockData.ts` e serão integrados um a um.
+> 🚧 **Fase 02 em andamento — integração frontend e backend.** O repositório agora é um monorepo com o frontend (React) e o backend (API REST em Node.js), além do banco PostgreSQL via Docker. Já integrados à API: **login** (JWT), **Talhões** (listar, buscar, cadastrar, editar, excluir) **Atividades** (agendar, filtrar, iniciar, concluir, com as regras RN04 e RN05) e **Estoque** (insumos, entradas e saídas em transação, status pelo mínimo — RN06 e RN07). Os demais módulos ainda usam os dados fictícios de `frontend/src/app/data/mockData.ts` e serão integrados um a um.
 
 ## 🏗️ Arquitetura
 
@@ -134,7 +134,7 @@ agro-sense/
 │   │   ├── docs/openapi.ts      # Especificação exibida em /api/docs
 │   │   ├── lib/                 # prisma.ts, token.ts (JWT), env.ts, AppError.ts
 │   │   ├── middlewares/         # autenticar, exigirPerfil, tratarErros
-│   │   └── modules/             # auth/, talhoes/, atividades/, usuarios/ (routes, controller, service, schema)
+│   │   └── modules/             # auth/, talhoes/, atividades/, insumos/, usuarios/ (routes, controller, service, schema)
 │   ├── prisma.config.ts         # Configuração do Prisma (schema, migrations, seed)
 │   ├── .env.example             # PORT, CORS_ORIGIN, DATABASE_URL, JWT_SECRET
 │   ├── package.json

@@ -16,6 +16,7 @@ export const openapi = {
     { name: 'Autenticação', description: 'Login e dados do usuário logado' },
     { name: 'Talhões', description: 'Áreas de cultivo da fazenda (RN03)' },
     { name: 'Atividades', description: 'Operações de campo (RN04, RN05)' },
+    { name: 'Estoque', description: 'Insumos e movimentações (RN06, RN07)' },
     { name: 'Usuários', description: 'Usuários do sistema' },
   ],
   components: {
@@ -117,6 +118,42 @@ export const openapi = {
           responsavelId: { type: 'integer', example: 3 },
           dataPrevista: { type: 'string', format: 'date', example: '2026-10-25' },
           observacao: { type: 'string', example: 'Aplicar no início da manhã' },
+        },
+      },
+      Insumo: {
+        type: 'object',
+        properties: {
+          id: { type: 'integer', example: 2 },
+          nome: { type: 'string', example: 'Fertilizante NPK 10-10-10' },
+          categoria: { type: 'string', enum: ['SEMENTES', 'FERTILIZANTES', 'DEFENSIVOS', 'COMBUSTIVEL'] },
+          unidade: { type: 'string', example: 'kg' },
+          quantidade: { type: 'number', example: 250, description: 'Saldo atual; só muda por movimentação (RN06)' },
+          estoqueMinimo: { type: 'number', example: 400 },
+          custoUnitario: { type: 'number', example: 4.2 },
+          valorEmEstoque: { type: 'number', example: 1050 },
+          status: { type: 'string', enum: ['NORMAL', 'ATENCAO', 'BAIXO'], description: 'RN07: BAIXO ≤ mínimo; ATENCAO ≤ 1,5 × mínimo' },
+        },
+      },
+      InsumoEntrada: {
+        type: 'object',
+        required: ['nome', 'categoria', 'unidade', 'estoqueMinimo', 'custoUnitario'],
+        properties: {
+          nome: { type: 'string', example: 'Adubo Foliar Boro' },
+          categoria: { type: 'string', enum: ['SEMENTES', 'FERTILIZANTES', 'DEFENSIVOS', 'COMBUSTIVEL'] },
+          unidade: { type: 'string', example: 'L' },
+          estoqueMinimo: { type: 'number', example: 20 },
+          custoUnitario: { type: 'number', example: 35.9 },
+          quantidadeInicial: { type: 'number', example: 25, description: 'Só no cadastro; vira uma ENTRADA' },
+        },
+      },
+      MovimentacaoEntrada: {
+        type: 'object',
+        required: ['tipo', 'quantidade'],
+        properties: {
+          tipo: { type: 'string', enum: ['ENTRADA', 'SAIDA'] },
+          quantidade: { type: 'number', example: 50 },
+          custoUnitario: { type: 'number', example: 4.5, description: 'Opcional; padrão = custo atual do insumo' },
+          atividadeId: { type: 'integer', description: 'Opcional; atividade que consumiu o insumo' },
         },
       },
       Health: {
@@ -272,6 +309,56 @@ export const openapi = {
           content: { 'application/json': { schema: { type: 'object', properties: { status: { type: 'string', enum: ['EM_ANDAMENTO', 'CONCLUIDA'] } } } } },
         },
         responses: { '200': { description: 'Atividade', content: { 'application/json': { schema: { $ref: '#/components/schemas/Atividade' } } } }, '409': { description: 'RN05: iniciar pulverização com vento forte', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } }, '422': { description: 'Transição inválida (ex.: já concluída)', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } } },
+      },
+    },
+    '/insumos': {
+      get: {
+        tags: ['Estoque'],
+        summary: 'Lista insumos com status calculado (RN07)',
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          { name: 'busca', in: 'query', schema: { type: 'string' } },
+          { name: 'categoria', in: 'query', schema: { type: 'string', enum: ['SEMENTES', 'FERTILIZANTES', 'DEFENSIVOS', 'COMBUSTIVEL'] } },
+          { name: 'status', in: 'query', schema: { type: 'string', enum: ['NORMAL', 'ATENCAO', 'BAIXO'] } },
+        ],
+        responses: { '200': { description: 'Lista', content: { 'application/json': { schema: { type: 'array', items: { $ref: '#/components/schemas/Insumo' } } } } } },
+      },
+      post: {
+        tags: ['Estoque'],
+        summary: 'Cadastra insumo (ADMIN, TECNICO)',
+        security: [{ bearerAuth: [] }],
+        requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/InsumoEntrada' } } } },
+        responses: { '201': { description: 'Insumo criado', content: { 'application/json': { schema: { $ref: '#/components/schemas/Insumo' } } } }, '400': { description: 'Dados inválidos', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } }, '409': { description: 'Nome já cadastrado', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } } },
+      },
+    },
+    '/insumos/resumo': {
+      get: {
+        tags: ['Estoque'],
+        summary: 'Totais dos cards: itens, abaixo do mínimo, em atenção e valor estimado',
+        security: [{ bearerAuth: [] }],
+        responses: { '200': { description: 'Resumo do estoque' } },
+      },
+    },
+    '/insumos/{id}': {
+      parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'integer' } }],
+      get: { tags: ['Estoque'], summary: 'Detalhe do insumo', security: [{ bearerAuth: [] }], responses: { '200': { description: 'Insumo', content: { 'application/json': { schema: { $ref: '#/components/schemas/Insumo' } } } }, '404': { description: 'Não encontrado', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } } } },
+      put: {
+        tags: ['Estoque'],
+        summary: 'Edita dados do insumo — não altera a quantidade (ADMIN, TECNICO)',
+        security: [{ bearerAuth: [] }],
+        requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/InsumoEntrada' } } } },
+        responses: { '200': { description: 'Insumo atualizado', content: { 'application/json': { schema: { $ref: '#/components/schemas/Insumo' } } } }, '409': { description: 'Nome já cadastrado', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } } },
+      },
+    },
+    '/insumos/{id}/movimentacoes': {
+      parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'integer' } }],
+      get: { tags: ['Estoque'], summary: 'Histórico de movimentações (50 mais recentes)', security: [{ bearerAuth: [] }], responses: { '200': { description: 'Movimentações' } } },
+      post: {
+        tags: ['Estoque'],
+        summary: 'Registra entrada ou saída em transação (RN06) — ADMIN, TECNICO',
+        security: [{ bearerAuth: [] }],
+        requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/MovimentacaoEntrada' } } } },
+        responses: { '201': { description: 'Insumo com o novo saldo', content: { 'application/json': { schema: { $ref: '#/components/schemas/Insumo' } } } }, '400': { description: 'Quantidade inválida', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } }, '422': { description: 'Saldo insuficiente (RN06)', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } } },
       },
     },
     '/usuarios/responsaveis': {
