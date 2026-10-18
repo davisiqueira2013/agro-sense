@@ -70,6 +70,11 @@ enum Severidade {
   AVISO
 }
 
+enum OrigemAlerta {
+  MANUAL
+  PREVISAO
+}
+
 enum TipoRelatorio {
   CUSTOS
   ATIVIDADES
@@ -179,16 +184,18 @@ model Movimentacao {
 }
 
 model AlertaClimatico {
-  id           Int        @id @default(autoincrement())
+  id           Int          @id @default(autoincrement())
   tipo         TipoAlerta
   severidade   Severidade
   titulo       String
   descricao    String
   inicio       DateTime
   fim          DateTime?
-  ativo        Boolean    @default(true)
-  criadoEm     DateTime   @default(now())
-  atualizadoEm DateTime   @updatedAt
+  ativo        Boolean      @default(true)
+  /// MANUAL: registrado pela equipe · PREVISAO: gerado pela sincronização com o Open-Meteo (RN09)
+  origem       OrigemAlerta @default(MANUAL)
+  criadoEm     DateTime     @default(now())
+  atualizadoEm DateTime     @updatedAt
 
   talhoes Talhao[]
 }

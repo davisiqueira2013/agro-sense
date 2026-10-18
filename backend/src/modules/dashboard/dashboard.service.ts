@@ -1,5 +1,6 @@
 import { prisma } from '../../lib/prisma.js';
 import { limitesDoDia } from '../../lib/validacao.js';
+import { filtroAlertaAtivo } from '../alertas/alertas.service.js';
 import { statusDoInsumo } from '../insumos/insumos.service.js';
 
 const MESES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
@@ -7,9 +8,6 @@ const MESES_EXTENSO = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho
 const ORDEM_SEVERIDADE = { CRITICO: 0, ATENCAO: 1, AVISO: 2 } as const;
 
 const arredondar = (valor: number) => Math.round(valor * 100) / 100;
-
-/** Alertas ativos agora: marcados como ativos e ainda não encerrados. */
-export const filtroAlertaAtivo = (agora = new Date()) => ({ ativo: true, OR: [{ fim: null }, { fim: { gt: agora } }] });
 
 /**
  * RN08 — indicadores do Dashboard, calculados no backend a partir dos dados reais.

@@ -123,11 +123,40 @@ export type Movimentacao = {
   atividade: { id: number; tipo: TipoAtividade } | null;
 };
 
+export type TipoAlerta = 'GEADA' | 'CHUVA_INTENSA' | 'VENTO_FORTE';
+
+/** Alerta como devolvido por GET /api/alertas. */
 export type AlertaClimatico = {
-  severidade: 'Crítico' | 'Atenção' | 'Aviso';
+  id: number;
+  tipo: TipoAlerta;
+  severidade: Severidade;
   titulo: string;
-  local: string;
   descricao: string;
+  inicio: string;
+  fim: string | null;
+  origem: 'MANUAL' | 'PREVISAO';
+  situacao: 'ATIVO' | 'ENCERRADO';
+  todaFazenda: boolean;
+  talhoes: { id: number; nome: string }[];
+};
+
+export type AlertaEntrada = {
+  tipo: TipoAlerta;
+  severidade?: Severidade;
+  descricao: string;
+  talhaoIds: number[];
+  /** AAAA-MM-DD */
+  inicio: string;
+  fim?: string;
+};
+
+/** POST /api/alertas/sincronizar */
+export type ResultadoSincronizacao = {
+  consultadoEm: string;
+  talhoesConsultados: number;
+  semCoordenadas: string[];
+  falhas: { talhao: string; motivo: string }[];
+  alertas: { criados: number; atualizados: number; encerrados: number };
 };
 
 export type Relatorio = {

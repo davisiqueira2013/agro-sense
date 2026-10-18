@@ -5,6 +5,7 @@ import { openapi } from './docs/openapi.js';
 import { prisma } from './lib/prisma.js';
 import { rotaNaoEncontrada, tratarErros } from './middlewares/tratarErros.js';
 import { authRoutes } from './modules/auth/auth.routes.js';
+import { alertasRoutes } from './modules/alertas/alertas.routes.js';
 import { atividadesRoutes } from './modules/atividades/atividades.routes.js';
 import { dashboardRoutes } from './modules/dashboard/dashboard.routes.js';
 import { insumosRoutes } from './modules/insumos/insumos.routes.js';
@@ -52,6 +53,7 @@ export function criarApp() {
   app.use('/api/atividades', atividadesRoutes);
   app.use('/api/insumos', insumosRoutes);
   app.use('/api/dashboard', dashboardRoutes);
+  app.use('/api/alertas', alertasRoutes);
   app.use('/api/usuarios', usuariosRoutes);
 
   app.use(rotaNaoEncontrada);

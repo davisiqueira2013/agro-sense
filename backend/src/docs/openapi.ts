@@ -18,6 +18,7 @@ export const openapi = {
     { name: 'Atividades', description: 'Operações de campo (RN04, RN05)' },
     { name: 'Estoque', description: 'Insumos e movimentações (RN06, RN07)' },
     { name: 'Dashboard', description: 'Indicadores calculados no backend (RN08)' },
+    { name: 'Alertas', description: 'Alertas climáticos e previsão do tempo via Open-Meteo (RN09)' },
     { name: 'Usuários', description: 'Usuários do sistema' },
   ],
   components: {
@@ -155,6 +156,22 @@ export const openapi = {
           quantidade: { type: 'number', example: 50 },
           custoUnitario: { type: 'number', example: 4.5, description: 'Opcional; padrão = custo atual do insumo' },
           atividadeId: { type: 'integer', description: 'Opcional; atividade que consumiu o insumo' },
+        },
+      },
+      AlertaClimatico: {
+        type: 'object',
+        properties: {
+          id: { type: 'integer' },
+          tipo: { type: 'string', enum: ['GEADA', 'CHUVA_INTENSA', 'VENTO_FORTE'] },
+          severidade: { type: 'string', enum: ['CRITICO', 'ATENCAO', 'AVISO'] },
+          titulo: { type: 'string', example: 'Vento Forte' },
+          descricao: { type: 'string' },
+          inicio: { type: 'string', format: 'date-time' },
+          fim: { type: 'string', format: 'date-time', nullable: true },
+          origem: { type: 'string', enum: ['MANUAL', 'PREVISAO'], description: 'PREVISAO = gerado pela sincronização com o Open-Meteo' },
+          situacao: { type: 'string', enum: ['ATIVO', 'ENCERRADO'] },
+          todaFazenda: { type: 'boolean' },
+          talhoes: { type: 'array', items: { type: 'object', properties: { id: { type: 'integer' }, nome: { type: 'string' } } } },
         },
       },
       Health: {
@@ -377,6 +394,61 @@ export const openapi = {
         security: [{ bearerAuth: [] }],
         parameters: [{ name: 'meses', in: 'query', schema: { type: 'integer', default: 6, minimum: 1, maximum: 24 } }],
         responses: { '200': { description: 'Série mensal com SEMENTES, FERTILIZANTES, DEFENSIVOS, COMBUSTIVEL e total' } },
+      },
+    },
+    '/alertas': {
+      get: {
+        tags: ['Alertas'],
+        summary: 'Lista alertas ativos, encerrados ou todos',
+        security: [{ bearerAuth: [] }],
+        parameters: [{ name: 'situacao', in: 'query', schema: { type: 'string', enum: ['ativos', 'encerrados', 'todos'], default: 'ativos' } }],
+        responses: { '200': { description: 'Alertas (mais graves primeiro)', content: { 'application/json': { schema: { type: 'array', items: { $ref: '#/components/schemas/AlertaClimatico' } } } } } },
+      },
+      post: {
+        tags: ['Alertas'],
+        summary: 'Registra um alerta manual (ADMIN, TECNICO)',
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                required: ['tipo', 'descricao', 'talhaoIds', 'inicio'],
+                properties: {
+                  tipo: { type: 'string', enum: ['GEADA', 'CHUVA_INTENSA', 'VENTO_FORTE'] },
+                  severidade: { type: 'string', enum: ['CRITICO', 'ATENCAO', 'AVISO'], description: 'Padrão conforme o tipo' },
+                  descricao: { type: 'string', example: 'Rajadas observadas no campo pela equipe' },
+                  talhaoIds: { type: 'array', items: { type: 'integer' }, example: [1, 3] },
+                  inicio: { type: 'string', format: 'date', example: '2026-10-18' },
+                  fim: { type: 'string', format: 'date', example: '2026-10-19' },
+                },
+              },
+            },
+          },
+        },
+        responses: { '201': { description: 'Alerta criado', content: { 'application/json': { schema: { $ref: '#/components/schemas/AlertaClimatico' } } } }, '400': { description: 'Dados inválidos', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } }, '422': { description: 'Talhão inexistente', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } } },
+      },
+    },
+    '/alertas/sincronizar': {
+      post: {
+        tags: ['Alertas'],
+        summary: 'RN09: consulta o Open-Meteo, atualiza o clima dos talhões e cria/atualiza/encerra alertas automáticos (ADMIN, TECNICO)',
+        security: [{ bearerAuth: [] }],
+        responses: {
+          '200': { description: 'Resumo: talhões consultados, falhas e alertas criados/atualizados/encerrados' },
+          '422': { description: 'Nenhum talhão com coordenadas', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } },
+          '502': { description: 'Open-Meteo indisponível', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } },
+        },
+      },
+    },
+    '/alertas/{id}/encerrar': {
+      parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'integer' } }],
+      patch: {
+        tags: ['Alertas'],
+        summary: 'Encerra um alerta (ADMIN, TECNICO)',
+        security: [{ bearerAuth: [] }],
+        responses: { '200': { description: 'Alerta encerrado', content: { 'application/json': { schema: { $ref: '#/components/schemas/AlertaClimatico' } } } }, '404': { description: 'Não encontrado', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } }, '422': { description: 'Já encerrado', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } } },
       },
     },
     '/usuarios/responsaveis': {

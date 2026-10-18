@@ -12,4 +12,6 @@ export const env = {
   JWT_SECRET: obrigatoria('JWT_SECRET'),
   /** Validade do token de login. */
   JWT_EXPIRA_EM: process.env.JWT_EXPIRA_EM ?? '8h',
+  /** Endpoint de previsão do Open-Meteo (gratuito, sem chave para uso não comercial). */
+  OPEN_METEO_URL: process.env.OPEN_METEO_URL ?? 'https://api.open-meteo.com/v1/forecast',
 };

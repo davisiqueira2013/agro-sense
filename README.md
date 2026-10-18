@@ -2,7 +2,9 @@
 
 Sistema web para **gestão agrícola**, desenvolvido como Projeto Integrador. Reúne em um único painel o que um produtor ou equipe de campo precisa no dia a dia: talhões, atividades, diário de campo, estoque de insumos, alertas climáticos, relatórios e usuários.
 
-> 🚧 **Fase 02 em andamento — integração frontend e backend.** O repositório agora é um monorepo com o frontend (React) e o backend (API REST em Node.js), além do banco PostgreSQL via Docker. Já integrados à API: **login** (JWT), **Talhões** (listar, buscar, cadastrar, editar, excluir) **Atividades** (agendar, filtrar, iniciar, concluir, com as regras RN04 e RN05) **Estoque** (insumos, entradas e saídas em transação, status pelo mínimo — RN06 e RN07) e **Dashboard** (indicadores e gráfico de custos calculados pela API — RN08). Os demais módulos ainda usam os dados fictícios de `frontend/src/app/data/mockData.ts` e serão integrados um a um.
+> 🚧 **Fase 02 em andamento — integração frontend e backend.** Monorepo com frontend (React), backend (API REST em Node.js) e banco PostgreSQL via Docker.
+>
+> Já integrados à API: **Login** (JWT), **Talhões**, **Atividades** (RN04, RN05), **Estoque** (RN06, RN07), **Dashboard** (RN08) e **Alertas Climáticos** com previsão real do Open-Meteo (RN09). Diário de Campo, Usuários e Relatórios ainda usam os dados fictícios de `frontend/src/app/data/mockData.ts`.
 
 ## 🏗️ Arquitetura
 
@@ -34,6 +36,7 @@ Navegador (React SPA)  ──HTTP + JSON / JWT──▶  API REST (Express)  ─
 | --- | --- |
 | Frontend | React 18, TypeScript, Vite 5, Tailwind CSS v4, shadcn/ui |
 | Backend | Node.js 22, Express 5, TypeScript, Prisma ORM 7, Zod, JWT (jsonwebtoken), bcryptjs, Swagger (OpenAPI 3) |
+| Serviço externo | [Open-Meteo](https://open-meteo.com) — previsão do tempo por coordenada (gratuito, sem chave) |
 | Banco de dados | PostgreSQL 16 (Docker) |
 
 ## ✅ Pré-requisitos
@@ -111,7 +114,7 @@ Acesse http://localhost:5173 e entre com um dos usuários da tabela acima (ex.: 
 | `npm run install:all` | Instala as dependências do backend e do frontend |
 | `npm run db:up` / `db:down` | Sobe / para o PostgreSQL no Docker |
 | `npm run db:setup` | Aplica as migrations e recria os dados de exemplo |
-| `npm run db:migrate` | Só aplica as migrations pendentes |
+| `npm run db:migrate` | Aplica as migrations pendentes e regera o cliente do Prisma |
 | `npm run db:seed` | Só recria os dados de exemplo (apaga os atuais) |
 | `npm run db:studio` | Abre o Prisma Studio para ver as tabelas no navegador |
 | `npm run dev:api` | API em modo desenvolvimento (recarrega ao salvar) |
@@ -134,7 +137,7 @@ agro-sense/
 │   │   ├── docs/openapi.ts      # Especificação exibida em /api/docs
 │   │   ├── lib/                 # prisma.ts, token.ts (JWT), env.ts, AppError.ts
 │   │   ├── middlewares/         # autenticar, exigirPerfil, tratarErros
-│   │   └── modules/             # auth/, talhoes/, atividades/, insumos/, dashboard/, usuarios/ (routes, controller, service, schema)
+│   │   └── modules/             # auth/, talhoes/, atividades/, insumos/, dashboard/, alertas/, usuarios/ (routes, controller, service, schema)
 │   ├── prisma.config.ts         # Configuração do Prisma (schema, migrations, seed)
 │   ├── .env.example             # PORT, CORS_ORIGIN, DATABASE_URL, JWT_SECRET
 │   ├── package.json
