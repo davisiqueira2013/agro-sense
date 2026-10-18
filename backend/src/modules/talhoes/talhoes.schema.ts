@@ -12,8 +12,8 @@ const coordenada = (min: number, max: number, campo: string) =>
     z.preprocess(virgulaParaPonto, z.coerce.number({ message: `${campo} inválida` }).min(min, `${campo} inválida`).max(max, `${campo} inválida`)).optional(),
   );
 
-/** Corpo de POST /talhoes. RN03: nome obrigatório e área maior que zero. */
-export const criarTalhaoSchema = z.object({
+/** Campos do talhão, sem valores padrão (base para cadastro e edição). */
+const camposTalhao = z.object({
   nome: texto('o nome do talhão', 60),
   municipio: texto('o município'),
   uf: z
@@ -26,13 +26,19 @@ export const criarTalhaoSchema = z.object({
     virgulaParaPonto,
     z.coerce.number({ message: 'Informe a área em hectares' }).positive('A área deve ser maior que zero').max(100000, 'Área muito grande'),
   ),
-  status: z.enum(STATUS_TALHAO, { message: 'Status inválido' }).default('EM_PREPARO'),
+  status: z.enum(STATUS_TALHAO, { message: 'Status inválido' }),
   latitude: coordenada(-90, 90, 'Latitude'),
   longitude: coordenada(-180, 180, 'Longitude'),
 });
 
-/** Corpo de PUT /talhoes/:id — mesmos campos, todos opcionais. */
-export const atualizarTalhaoSchema = criarTalhaoSchema.partial();
+/** Corpo de POST /talhoes. RN03: nome obrigatório e área maior que zero. */
+export const criarTalhaoSchema = camposTalhao.extend({ status: camposTalhao.shape.status.default('EM_PREPARO') });
+
+/**
+ * Corpo de PUT /talhoes/:id — mesmos campos, todos opcionais.
+ * Parte da base SEM padrões: um campo não enviado não é alterado.
+ */
+export const atualizarTalhaoSchema = camposTalhao.partial();
 
 /** Filtros de GET /talhoes. */
 export const listarTalhoesSchema = z.object({

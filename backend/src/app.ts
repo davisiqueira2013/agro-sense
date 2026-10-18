@@ -8,6 +8,7 @@ import { authRoutes } from './modules/auth/auth.routes.js';
 import { alertasRoutes } from './modules/alertas/alertas.routes.js';
 import { atividadesRoutes } from './modules/atividades/atividades.routes.js';
 import { dashboardRoutes } from './modules/dashboard/dashboard.routes.js';
+import { diarioRoutes } from './modules/diario/diario.routes.js';
 import { insumosRoutes } from './modules/insumos/insumos.routes.js';
 import { talhoesRoutes } from './modules/talhoes/talhoes.routes.js';
 import { usuariosRoutes } from './modules/usuarios/usuarios.routes.js';
@@ -54,6 +55,7 @@ export function criarApp() {
   app.use('/api/insumos', insumosRoutes);
   app.use('/api/dashboard', dashboardRoutes);
   app.use('/api/alertas', alertasRoutes);
+  app.use('/api/diario', diarioRoutes);
   app.use('/api/usuarios', usuariosRoutes);
 
   app.use(rotaNaoEncontrada);

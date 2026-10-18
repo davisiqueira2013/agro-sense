@@ -76,12 +76,26 @@ export type AtividadeEntrada = {
 /** Usuário que pode receber atividades (GET /api/usuarios/responsaveis). */
 export type Responsavel = { id: number; nome: string; cargo: string };
 
+export type CategoriaRegistro = 'PRAGAS' | 'SOLO' | 'CLIMA' | 'DOENCAS' | 'GERAL';
+
+/** Registro como devolvido por GET /api/diario. */
 export type RegistroDiario = {
-  data: string;
-  autor: string;
+  id: number;
   titulo: string;
   texto: string;
-  tag: string;
+  categoria: CategoriaRegistro;
+  data: string;
+  autor: { id: number; nome: string };
+  talhao: { id: number; nome: string } | null;
+};
+
+export type RegistroEntrada = {
+  titulo: string;
+  texto: string;
+  categoria: CategoriaRegistro;
+  talhaoId?: number | null;
+  /** AAAA-MM-DD */
+  data?: string;
 };
 
 export type CategoriaInsumo = 'SEMENTES' | 'FERTILIZANTES' | 'DEFENSIVOS' | 'COMBUSTIVEL';

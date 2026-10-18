@@ -1,19 +1,13 @@
 // Dados fictícios do protótipo (Fase 01).
-// Talhões, atividades, estoque, alertas e usuário logado já vêm da API.
+// Talhões, atividades, estoque, alertas, diário e usuário logado já vêm da API.
 // Cada array restante será substituído por uma chamada à API na Fase 02,
 // por meio da camada src/services. Mantê-los separados das telas
 // permite trocar a fonte de dados sem alterar os componentes visuais.
 
 import type {
-  RegistroDiario,
   Relatorio,
   Usuario,
 } from '../types';
-
-export const registrosDiario: RegistroDiario[] = [
-  { data: '10 Dez 2026', autor: 'Ana Ferreira', titulo: 'Identificação de praga inicial', texto: 'Encontrado foco inicial de mosca-branca nas bordaduras do Talhão A1. Recomendada aplicação direcionada nos próximos 2 dias.', tag: 'Pragas' },
-  { data: '08 Dez 2026', autor: 'Carlos Mendes', titulo: 'Condições do solo pós-chuva', texto: 'Avaliamos a umidade do solo no Talhão C3. Solo em capacidade de campo excelente para entrada de maquinário pesado.', tag: 'Solo' },
-];
 
 export const relatorios: Relatorio[] = [
   { nome: 'Fechamento de Custos Mensal', data: '01 Dez 2026', tamanho: '2.4 MB' },
