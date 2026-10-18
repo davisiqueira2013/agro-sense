@@ -179,12 +179,18 @@ export type Relatorio = {
   tamanho: string;
 };
 
+/** Usuário como devolvido por GET /api/usuarios (ADMIN). */
 export type Usuario = {
+  id: number;
   nome: string;
   email: string;
   cargo: string;
-  status: 'Ativo' | 'Inativo';
+  perfil: Perfil;
+  ativo: boolean;
+  criadoEm: string;
 };
+
+export type UsuarioEntrada = { nome: string; email: string; cargo: string; perfil: Perfil; senha?: string };
 
 export type Severidade = 'CRITICO' | 'ATENCAO' | 'AVISO';
 

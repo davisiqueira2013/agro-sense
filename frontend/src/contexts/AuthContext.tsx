@@ -32,9 +32,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // A API recusou o token em alguma tela → volta para o login.
   useEffect(() => {
-    const aoExpirar = () => {
+    const aoExpirar = (evento: Event) => {
+      const motivo = (evento as CustomEvent<string | undefined>).detail;
       setUsuario(null);
-      setAviso('Sua sessão expirou. Faça login novamente.');
+      setAviso(motivo ? `${motivo}.` : 'Sua sessão expirou. Faça login novamente.');
     };
     window.addEventListener(EVENTO_SESSAO_EXPIRADA, aoExpirar);
     return () => window.removeEventListener(EVENTO_SESSAO_EXPIRADA, aoExpirar);

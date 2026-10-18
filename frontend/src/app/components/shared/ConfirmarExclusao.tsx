@@ -15,12 +15,14 @@ type Props = {
   titulo: string;
   descricao: string;
   onCancelar: () => void;
+  /** Texto do botão de confirmação (padrão: "Excluir"). */
+  textoConfirmar?: string;
   /** Executa a exclusão; se lançar erro, o diálogo continua aberto. */
   onConfirmar: () => Promise<void>;
 };
 
 /** Pede confirmação antes de excluir um registro. */
-export function ConfirmarExclusao({ aberto, titulo, descricao, onCancelar, onConfirmar }: Props) {
+export function ConfirmarExclusao({ aberto, titulo, descricao, onCancelar, onConfirmar, textoConfirmar = 'Excluir' }: Props) {
   const [excluindo, setExcluindo] = useState(false);
 
   const confirmar = async () => {
@@ -53,7 +55,7 @@ export function ConfirmarExclusao({ aberto, titulo, descricao, onCancelar, onCon
             className="flex items-center justify-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-md text-sm font-medium cursor-pointer disabled:opacity-70"
           >
             {excluindo && <Loader2 size={16} className="animate-spin" />}
-            Excluir
+            {textoConfirmar}
           </button>
         </AlertDialogFooter>
       </AlertDialogContent>

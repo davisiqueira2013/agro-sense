@@ -20,7 +20,7 @@ export const openapi = {
     { name: 'Dashboard', description: 'Indicadores calculados no backend (RN08)' },
     { name: 'Alertas', description: 'Alertas climáticos e previsão do tempo via Open-Meteo (RN09)' },
     { name: 'Diário de Campo', description: 'Registros agronômicos da equipe (RN10)' },
-    { name: 'Usuários', description: 'Usuários do sistema' },
+    { name: 'Usuários', description: 'Gestão de usuários e perfis — somente ADMIN (RN02, RN11)' },
   ],
   components: {
     securitySchemes: {
@@ -498,6 +498,53 @@ export const openapi = {
         summary: 'Exclui registro — só o autor ou ADMIN (RN10)',
         security: [{ bearerAuth: [] }],
         responses: { '204': { description: 'Excluído' }, '403': { description: 'Não é o autor nem ADMIN', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } }, '404': { description: 'Não encontrado', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } } },
+      },
+    },
+    '/usuarios': {
+      get: {
+        tags: ['Usuários'],
+        summary: 'Lista usuários (ADMIN)',
+        security: [{ bearerAuth: [] }],
+        responses: { '200': { description: 'Usuários', content: { 'application/json': { schema: { type: 'array', items: { $ref: '#/components/schemas/Usuario' } } } } }, '403': { description: 'Não é ADMIN', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } } },
+      },
+      post: {
+        tags: ['Usuários'],
+        summary: 'Cadastra usuário — e-mail único, senha ≥ 8 caracteres (RN11)',
+        security: [{ bearerAuth: [] }],
+        requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: {
+            nome: { type: 'string', example: 'Marina Costa' },
+            email: { type: 'string', format: 'email', example: 'marina@agrosense.com.br' },
+            cargo: { type: 'string', example: 'Técnica Agrícola' },
+            perfil: { type: 'string', enum: ['ADMIN', 'TECNICO', 'LEITOR'] },
+            senha: { type: 'string', minLength: 8, example: 'campo2026' },
+          } } } } },
+        responses: { '201': { description: 'Usuário criado', content: { 'application/json': { schema: { $ref: '#/components/schemas/Usuario' } } } }, '400': { description: 'Dados inválidos', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } }, '409': { description: 'E-mail já cadastrado', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } } },
+      },
+    },
+    '/usuarios/{id}': {
+      parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'integer' } }],
+      put: {
+        tags: ['Usuários'],
+        summary: 'Edita usuário; senha opcional para redefinir (ADMIN)',
+        security: [{ bearerAuth: [] }],
+        requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: {
+            nome: { type: 'string', example: 'Marina Costa' },
+            email: { type: 'string', format: 'email', example: 'marina@agrosense.com.br' },
+            cargo: { type: 'string', example: 'Técnica Agrícola' },
+            perfil: { type: 'string', enum: ['ADMIN', 'TECNICO', 'LEITOR'] },
+            senha: { type: 'string', minLength: 8, example: 'campo2026' },
+          } } } } },
+        responses: { '200': { description: 'Usuário atualizado', content: { 'application/json': { schema: { $ref: '#/components/schemas/Usuario' } } } }, '409': { description: 'E-mail já cadastrado', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } }, '422': { description: 'Remover o próprio perfil de ADMIN ou o último ADMIN', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } } },
+      },
+    },
+    '/usuarios/{id}/status': {
+      parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'integer' } }],
+      patch: {
+        tags: ['Usuários'],
+        summary: 'Ativa ou desativa — o usuário desativado perde o acesso na hora (ADMIN)',
+        security: [{ bearerAuth: [] }],
+        requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', properties: { ativo: { type: 'boolean' } } } } } },
+        responses: { '200': { description: 'Status alterado', content: { 'application/json': { schema: { $ref: '#/components/schemas/Usuario' } } } }, '422': { description: 'Desativar a própria conta ou o último ADMIN (RN11)', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } } },
       },
     },
     '/usuarios/responsaveis': {
