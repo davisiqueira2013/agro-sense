@@ -11,7 +11,9 @@ import { authRoutes } from './modules/auth/auth.routes.js';
 export function criarApp() {
   const app = express();
 
-  app.use(cors({ origin: process.env.CORS_ORIGIN ?? 'http://localhost:5173' }));
+  // CORS_ORIGIN aceita uma ou mais origens separadas por vírgula.
+  const origens = (process.env.CORS_ORIGIN ?? 'http://localhost:5173').split(',').map((origem) => origem.trim());
+  app.use(cors({ origin: origens }));
   app.use(express.json());
 
   // Documentação navegável da API.

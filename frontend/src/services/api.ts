@@ -76,7 +76,10 @@ export async function api<T>(caminho: string, opcoes: RequestInit = {}): Promise
       tokenStorage.apagar();
       window.dispatchEvent(new Event(EVENTO_SESSAO_EXPIRADA));
     }
-    throw new ApiError(resposta.status, corpo.codigo ?? 'ERRO', corpo.erro ?? 'Falha na comunicação com o servidor', corpo.detalhes);
+    // Erro de validação (400): mostra o primeiro campo inválido em vez do genérico "Dados inválidos".
+    const primeiroDetalhe = Array.isArray(corpo.detalhes) ? corpo.detalhes[0]?.mensagem : undefined;
+    const mensagem = primeiroDetalhe ?? corpo.erro ?? 'Falha na comunicação com o servidor';
+    throw new ApiError(resposta.status, corpo.codigo ?? 'ERRO', mensagem, corpo.detalhes);
   }
 
   return corpo as T;
