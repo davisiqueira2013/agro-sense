@@ -1,5 +1,6 @@
 // Dados fictícios do protótipo (Fase 01).
-// Cada array aqui será substituído por uma chamada à API na Fase 02,
+// Talhões e usuário logado já vêm da API.
+// Cada array restante será substituído por uma chamada à API na Fase 02,
 // por meio da camada src/services. Mantê-los separados das telas
 // permite trocar a fonte de dados sem alterar os componentes visuais.
 
@@ -11,16 +12,9 @@ import type {
   Insumo,
   RegistroDiario,
   Relatorio,
-  Talhao,
   Usuario,
 } from '../types';
 
-export const talhoes: Talhao[] = [
-  { nome: 'Talhão A1', local: 'Londrina, PR', cultura: 'Soja', area: '45.2 ha', temp: '24°C', umidade: '68%', data: '09/12/2026', status: 'Ativo' },
-  { nome: 'Talhão B2', local: 'Maringá, PR', cultura: 'Milho', area: '32.8 ha', temp: '26°C', umidade: '72%', data: '03/12/2026', status: 'Em preparo' },
-  { nome: 'Talhão C3', local: 'Ponta Grossa, PR', cultura: 'Trigo', area: '28.5 ha', temp: '19°C', umidade: '85%', data: '09/12/2026', status: 'Ativo' },
-  { nome: 'Talhão D4', local: 'Cascavel, PR', cultura: 'Soja', area: '61 ha', temp: '27°C', umidade: '60%', data: '28/11/2026', status: 'Colhido' },
-];
 
 export const atividades: Atividade[] = [
   { status: 'Concluído', tipo: 'Plantio', talhao: 'Talhão A1', data: '15/11/2026', responsavel: 'Carlos Mendes' },

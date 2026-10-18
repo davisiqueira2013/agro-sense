@@ -14,6 +14,7 @@ export const openapi = {
   tags: [
     { name: 'Sistema', description: 'Estado da API e do banco de dados' },
     { name: 'Autenticação', description: 'Login e dados do usuário logado' },
+    { name: 'Talhões', description: 'Áreas de cultivo da fazenda (RN03)' },
   ],
   components: {
     securitySchemes: {
@@ -55,6 +56,38 @@ export const openapi = {
           usuario: { $ref: '#/components/schemas/Usuario' },
         },
       },
+      Talhao: {
+        type: 'object',
+        properties: {
+          id: { type: 'integer', example: 1 },
+          nome: { type: 'string', example: 'Talhão A1' },
+          municipio: { type: 'string', example: 'Londrina' },
+          uf: { type: 'string', example: 'PR' },
+          cultura: { type: 'string', example: 'Soja' },
+          areaHa: { type: 'number', example: 45.2 },
+          status: { type: 'string', enum: ['EM_PREPARO', 'ATIVO', 'COLHIDO'] },
+          latitude: { type: 'number', nullable: true, example: -23.3045 },
+          longitude: { type: 'number', nullable: true, example: -51.1696 },
+          temperaturaAtual: { type: 'number', nullable: true, example: 24 },
+          umidadeAtual: { type: 'number', nullable: true, example: 68 },
+          climaAtualizadoEm: { type: 'string', format: 'date-time', nullable: true },
+          _count: { type: 'object', properties: { atividades: { type: 'integer', example: 2 } } },
+        },
+      },
+      TalhaoEntrada: {
+        type: 'object',
+        required: ['nome', 'municipio', 'uf', 'cultura', 'areaHa'],
+        properties: {
+          nome: { type: 'string', example: 'Talhão G7' },
+          municipio: { type: 'string', example: 'Apucarana' },
+          uf: { type: 'string', example: 'PR' },
+          cultura: { type: 'string', example: 'Café' },
+          areaHa: { type: 'number', example: 22.5, description: 'Maior que zero' },
+          status: { type: 'string', enum: ['EM_PREPARO', 'ATIVO', 'COLHIDO'], default: 'EM_PREPARO' },
+          latitude: { type: 'number', example: -23.55 },
+          longitude: { type: 'number', example: -51.46 },
+        },
+      },
       Health: {
         type: 'object',
         properties: {
@@ -88,6 +121,68 @@ export const openapi = {
         responses: {
           '200': { description: 'Usuário logado', content: { 'application/json': { schema: { $ref: '#/components/schemas/Usuario' } } } },
           '401': { description: 'Token ausente, inválido ou expirado', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } },
+        },
+      },
+    },
+    '/talhoes': {
+      get: {
+        tags: ['Talhões'],
+        summary: 'Lista os talhões, com busca por nome ou cultura',
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          { name: 'busca', in: 'query', schema: { type: 'string' }, description: 'Parte do nome ou da cultura' },
+          { name: 'status', in: 'query', schema: { type: 'string', enum: ['EM_PREPARO', 'ATIVO', 'COLHIDO'] } },
+        ],
+        responses: {
+          '200': { description: 'Lista de talhões', content: { 'application/json': { schema: { type: 'array', items: { $ref: '#/components/schemas/Talhao' } } } } },
+          '401': { description: 'Não autenticado', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } },
+        },
+      },
+      post: {
+        tags: ['Talhões'],
+        summary: 'Cadastra um talhão (ADMIN, TECNICO)',
+        security: [{ bearerAuth: [] }],
+        requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/TalhaoEntrada' } } } },
+        responses: {
+          '201': { description: 'Talhão criado', content: { 'application/json': { schema: { $ref: '#/components/schemas/Talhao' } } } },
+          '400': { description: 'Dados inválidos (ex.: área zero)', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } },
+          '403': { description: 'Perfil sem permissão', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } },
+          '409': { description: 'Já existe talhão com esse nome', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } },
+        },
+      },
+    },
+    '/talhoes/{id}': {
+      parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'integer' } }],
+      get: {
+        tags: ['Talhões'],
+        summary: 'Detalhe de um talhão',
+        security: [{ bearerAuth: [] }],
+        responses: {
+          '200': { description: 'Talhão', content: { 'application/json': { schema: { $ref: '#/components/schemas/Talhao' } } } },
+          '404': { description: 'Não encontrado', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } },
+        },
+      },
+      put: {
+        tags: ['Talhões'],
+        summary: 'Edita um talhão (ADMIN, TECNICO)',
+        security: [{ bearerAuth: [] }],
+        requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/TalhaoEntrada' } } } },
+        responses: {
+          '200': { description: 'Talhão atualizado', content: { 'application/json': { schema: { $ref: '#/components/schemas/Talhao' } } } },
+          '400': { description: 'Dados inválidos', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } },
+          '404': { description: 'Não encontrado', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } },
+          '409': { description: 'Nome já usado por outro talhão', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } },
+        },
+      },
+      delete: {
+        tags: ['Talhões'],
+        summary: 'Exclui um talhão sem atividades (ADMIN)',
+        security: [{ bearerAuth: [] }],
+        responses: {
+          '204': { description: 'Excluído' },
+          '403': { description: 'Perfil sem permissão', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } },
+          '404': { description: 'Não encontrado', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } },
+          '409': { description: 'Talhão possui atividades (RN03)', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } },
         },
       },
     },
