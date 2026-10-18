@@ -6,6 +6,7 @@ import { prisma } from './lib/prisma.js';
 import { rotaNaoEncontrada, tratarErros } from './middlewares/tratarErros.js';
 import { authRoutes } from './modules/auth/auth.routes.js';
 import { atividadesRoutes } from './modules/atividades/atividades.routes.js';
+import { insumosRoutes } from './modules/insumos/insumos.routes.js';
 import { talhoesRoutes } from './modules/talhoes/talhoes.routes.js';
 import { usuariosRoutes } from './modules/usuarios/usuarios.routes.js';
 
@@ -48,6 +49,7 @@ export function criarApp() {
   app.use('/api/auth', authRoutes);
   app.use('/api/talhoes', talhoesRoutes);
   app.use('/api/atividades', atividadesRoutes);
+  app.use('/api/insumos', insumosRoutes);
   app.use('/api/usuarios', usuariosRoutes);
 
   app.use(rotaNaoEncontrada);

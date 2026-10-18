@@ -1,5 +1,5 @@
 // Dados fictícios do protótipo (Fase 01).
-// Talhões, atividades e usuário logado já vêm da API.
+// Talhões, atividades, estoque e usuário logado já vêm da API.
 // Cada array restante será substituído por uma chamada à API na Fase 02,
 // por meio da camada src/services. Mantê-los separados das telas
 // permite trocar a fonte de dados sem alterar os componentes visuais.
@@ -8,7 +8,6 @@ import type {
   AlertaClimatico,
   CustoMensal,
   IndicadorDashboard,
-  Insumo,
   RegistroDiario,
   Relatorio,
   Usuario,
@@ -21,14 +20,7 @@ export const registrosDiario: RegistroDiario[] = [
   { data: '08 Dez 2026', autor: 'Carlos Mendes', titulo: 'Condições do solo pós-chuva', texto: 'Avaliamos a umidade do solo no Talhão C3. Solo em capacidade de campo excelente para entrada de maquinário pesado.', tag: 'Solo' },
 ];
 
-export const insumos: Insumo[] = [
-  { nome: 'Semente de Soja (XP-45)', categoria: 'Sementes', quantidade: '1.200 kg', status: 'Normal' },
-  { nome: 'Fertilizante NPK 10-10-10', categoria: 'Fertilizantes', quantidade: '250 kg', status: 'Baixo' },
-  { nome: 'Fungicida ABC', categoria: 'Defensivos', quantidade: '45 L', status: 'Atenção' },
-  { nome: 'Óleo Diesel S10', categoria: 'Combustível', quantidade: '3.500 L', status: 'Normal' },
-];
 
-export const resumoEstoque = { totalItens: '128', abaixoMinimo: '4', valorEstimado: 'R$ 345k' };
 
 export const alertas: AlertaClimatico[] = [
   { severidade: 'Crítico', titulo: 'Risco de Geada Extrema', local: 'Talhão B2, Talhão F6', descricao: 'Previsão de temperatura abaixo de 2°C para as próximas 48 horas.' },

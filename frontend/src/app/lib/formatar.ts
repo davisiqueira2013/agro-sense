@@ -31,3 +31,8 @@ export const rotuloDoDia = (iso: string) => {
   if (dia === deslocar(-1)) return 'Ontem';
   return formatarData(iso);
 };
+
+const moeda = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+
+/** 49891.5 → "R$ 49.891,50" */
+export const formatarMoeda = (valor: number) => moeda.format(valor);

@@ -84,3 +84,8 @@ export async function api<T>(caminho: string, opcoes: RequestInit = {}): Promise
 
   return corpo as T;
 }
+
+/** Lê os erros de campo devolvidos pela API (400) para marcar no formulário. */
+export function errosDeCampo(detalhes: unknown): { campo: string; mensagem: string }[] {
+  return Array.isArray(detalhes) ? (detalhes as { campo: string; mensagem: string }[]) : [];
+}

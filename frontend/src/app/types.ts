@@ -84,11 +84,43 @@ export type RegistroDiario = {
   tag: string;
 };
 
+export type CategoriaInsumo = 'SEMENTES' | 'FERTILIZANTES' | 'DEFENSIVOS' | 'COMBUSTIVEL';
+export type StatusInsumo = 'NORMAL' | 'ATENCAO' | 'BAIXO';
+
+/** Insumo como devolvido por GET /api/insumos (status calculado pela API, RN07). */
 export type Insumo = {
+  id: number;
   nome: string;
-  categoria: string;
-  quantidade: string;
-  status: 'Normal' | 'Atenção' | 'Baixo';
+  categoria: CategoriaInsumo;
+  unidade: string;
+  quantidade: number;
+  estoqueMinimo: number;
+  custoUnitario: number;
+  valorEmEstoque: number;
+  status: StatusInsumo;
+};
+
+export type InsumoEntrada = {
+  nome: string;
+  categoria: CategoriaInsumo;
+  unidade: string;
+  estoqueMinimo: number;
+  custoUnitario: number;
+  quantidadeInicial?: number;
+};
+
+export type ResumoEstoque = { totalItens: number; abaixoMinimo: number; emAtencao: number; valorEstimado: number };
+
+export type TipoMovimentacao = 'ENTRADA' | 'SAIDA';
+
+export type Movimentacao = {
+  id: number;
+  tipo: TipoMovimentacao;
+  quantidade: number;
+  custoUnitario: number;
+  data: string;
+  usuario: { nome: string };
+  atividade: { id: number; tipo: TipoAtividade } | null;
 };
 
 export type AlertaClimatico = {
