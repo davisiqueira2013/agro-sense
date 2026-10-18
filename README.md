@@ -33,7 +33,7 @@ Navegador (React SPA)  ──HTTP + JSON / JWT──▶  API REST (Express)  ─
 | Camada | Tecnologias |
 | --- | --- |
 | Frontend | React 18, TypeScript, Vite 5, Tailwind CSS v4, shadcn/ui |
-| Backend | Node.js 22, Express, TypeScript (Prisma e JWT nas próximas etapas) |
+| Backend | Node.js 22, Express 5, TypeScript, Prisma ORM 7, Zod, Swagger (OpenAPI 3) |
 | Banco de dados | PostgreSQL 16 (Docker) |
 
 ## ✅ Pré-requisitos
@@ -71,13 +71,30 @@ npm run db:up
 
 O PostgreSQL fica disponível em `localhost:5432` (usuário, senha e banco: `agrosense`). Para parar: `npm run db:down`.
 
+Na primeira vez (e sempre que quiser voltar aos dados iniciais), crie as tabelas e carregue os dados de exemplo:
+
+```bash
+npm run db:setup
+```
+
+Usuários criados pelo seed (senha de todos: `agrosense123`):
+
+| E-mail | Perfil |
+| --- | --- |
+| rodrigo@agrosense.com.br | ADMIN |
+| ana.agronoma@agrosense.com.br | TECNICO |
+| carlos.op@agrosense.com.br | TECNICO |
+| jose.silva@agrosense.com.br | LEITOR (inativo) |
+
 ### 4. Subir a API (terminal 1)
 
 ```bash
 npm run dev:api
 ```
 
-Teste em http://localhost:3333/api/health — deve responder `{"status":"ok", ...}`.
+Teste em http://localhost:3333/api/health — deve responder `{"status":"ok","banco":"conectado", ...}`.
+
+A documentação interativa da API (Swagger) fica em http://localhost:3333/api/docs.
 
 ### 5. Subir o frontend (terminal 2)
 
@@ -93,6 +110,10 @@ Acesse http://localhost:5173.
 | --- | --- |
 | `npm run install:all` | Instala as dependências do backend e do frontend |
 | `npm run db:up` / `db:down` | Sobe / para o PostgreSQL no Docker |
+| `npm run db:setup` | Aplica as migrations e recria os dados de exemplo |
+| `npm run db:migrate` | Só aplica as migrations pendentes |
+| `npm run db:seed` | Só recria os dados de exemplo (apaga os atuais) |
+| `npm run db:studio` | Abre o Prisma Studio para ver as tabelas no navegador |
 | `npm run dev:api` | API em modo desenvolvimento (recarrega ao salvar) |
 | `npm run dev:web` | Frontend em modo desenvolvimento |
 | `npm run build` | Compila backend e frontend |
@@ -103,9 +124,17 @@ Acesse http://localhost:5173.
 ```
 agro-sense/
 ├── backend/
+│   ├── prisma/
+│   │   ├── schema.prisma        # Modelo de dados (8 entidades)
+│   │   ├── migrations/          # SQL versionado do banco
+│   │   └── seed.ts              # Dados de exemplo
 │   ├── src/
-│   │   ├── app.ts               # Express: CORS, JSON, rotas /api
-│   │   └── server.ts            # Sobe a API na porta 3333
+│   │   ├── app.ts               # Express: CORS, JSON, Swagger, rotas /api, erros
+│   │   ├── server.ts            # Sobe a API na porta 3333
+│   │   ├── docs/openapi.ts      # Especificação exibida em /api/docs
+│   │   ├── lib/                 # prisma.ts (conexão) e AppError.ts
+│   │   └── middlewares/         # tratarErros.ts (formato padrão de erro)
+│   ├── prisma.config.ts         # Configuração do Prisma (schema, migrations, seed)
 │   ├── .env.example             # PORT, CORS_ORIGIN, DATABASE_URL, JWT_SECRET
 │   ├── package.json
 │   └── tsconfig.json

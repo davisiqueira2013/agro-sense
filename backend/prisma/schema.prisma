@@ -1,0 +1,208 @@
+// Modelo de dados do Agro Sense.
+// A URL de conexão fica em prisma.config.ts (variável DATABASE_URL).
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------- Enumerações ----------
+
+enum Perfil {
+  ADMIN
+  TECNICO
+  LEITOR
+}
+
+enum StatusTalhao {
+  EM_PREPARO
+  ATIVO
+  COLHIDO
+}
+
+enum TipoAtividade {
+  PLANTIO
+  PULVERIZACAO
+  ADUBACAO
+  COLHEITA
+  IRRIGACAO
+}
+
+enum StatusAtividade {
+  AGENDADA
+  EM_ANDAMENTO
+  CONCLUIDA
+}
+
+enum CategoriaRegistro {
+  PRAGAS
+  SOLO
+  CLIMA
+  DOENCAS
+  GERAL
+}
+
+enum CategoriaInsumo {
+  SEMENTES
+  FERTILIZANTES
+  DEFENSIVOS
+  COMBUSTIVEL
+}
+
+enum TipoMovimentacao {
+  ENTRADA
+  SAIDA
+}
+
+enum TipoAlerta {
+  GEADA
+  CHUVA_INTENSA
+  VENTO_FORTE
+}
+
+enum Severidade {
+  CRITICO
+  ATENCAO
+  AVISO
+}
+
+enum TipoRelatorio {
+  CUSTOS
+  ATIVIDADES
+  ESTOQUE
+}
+
+// ---------- Entidades ----------
+
+model Usuario {
+  id           Int      @id @default(autoincrement())
+  nome         String
+  email        String   @unique
+  senhaHash    String
+  cargo        String
+  perfil       Perfil   @default(TECNICO)
+  ativo        Boolean  @default(true)
+  criadoEm     DateTime @default(now())
+  atualizadoEm DateTime @updatedAt
+
+  atividades    Atividade[]
+  registros     RegistroDiario[]
+  movimentacoes Movimentacao[]
+  relatorios    Relatorio[]
+}
+
+model Talhao {
+  id                Int          @id @default(autoincrement())
+  nome              String       @unique
+  municipio         String
+  uf                String
+  latitude          Float?
+  longitude         Float?
+  cultura           String
+  areaHa            Float
+  status            StatusTalhao @default(EM_PREPARO)
+  temperaturaAtual  Float?
+  umidadeAtual      Float?
+  climaAtualizadoEm DateTime?
+  criadoEm          DateTime     @default(now())
+  atualizadoEm      DateTime     @updatedAt
+
+  atividades Atividade[]
+  registros  RegistroDiario[]
+  alertas    AlertaClimatico[]
+}
+
+model Atividade {
+  id            Int             @id @default(autoincrement())
+  tipo          TipoAtividade
+  dataPrevista  DateTime
+  dataConclusao DateTime?
+  status        StatusAtividade @default(AGENDADA)
+  observacao    String?
+  talhaoId      Int
+  responsavelId Int
+  criadoEm      DateTime        @default(now())
+  atualizadoEm  DateTime        @updatedAt
+
+  talhao        Talhao         @relation(fields: [talhaoId], references: [id])
+  responsavel   Usuario        @relation(fields: [responsavelId], references: [id])
+  movimentacoes Movimentacao[]
+}
+
+model RegistroDiario {
+  id           Int               @id @default(autoincrement())
+  titulo       String
+  texto        String
+  categoria    CategoriaRegistro @default(GERAL)
+  data         DateTime          @default(now())
+  autorId      Int
+  talhaoId     Int?
+  criadoEm     DateTime          @default(now())
+  atualizadoEm DateTime          @updatedAt
+
+  autor  Usuario @relation(fields: [autorId], references: [id])
+  talhao Talhao? @relation(fields: [talhaoId], references: [id])
+}
+
+model Insumo {
+  id            Int             @id @default(autoincrement())
+  nome          String          @unique
+  categoria     CategoriaInsumo
+  unidade       String
+  quantidade    Float           @default(0)
+  estoqueMinimo Float
+  custoUnitario Decimal         @db.Decimal(12, 2)
+  criadoEm      DateTime        @default(now())
+  atualizadoEm  DateTime        @updatedAt
+
+  movimentacoes Movimentacao[]
+}
+
+model Movimentacao {
+  id            Int              @id @default(autoincrement())
+  tipo          TipoMovimentacao
+  quantidade    Float
+  custoUnitario Decimal          @db.Decimal(12, 2)
+  data          DateTime         @default(now())
+  insumoId      Int
+  usuarioId     Int
+  atividadeId   Int?
+  criadoEm      DateTime         @default(now())
+
+  insumo    Insumo     @relation(fields: [insumoId], references: [id])
+  usuario   Usuario    @relation(fields: [usuarioId], references: [id])
+  atividade Atividade? @relation(fields: [atividadeId], references: [id])
+}
+
+model AlertaClimatico {
+  id           Int        @id @default(autoincrement())
+  tipo         TipoAlerta
+  severidade   Severidade
+  titulo       String
+  descricao    String
+  inicio       DateTime
+  fim          DateTime?
+  ativo        Boolean    @default(true)
+  criadoEm     DateTime   @default(now())
+  atualizadoEm DateTime   @updatedAt
+
+  talhoes Talhao[]
+}
+
+model Relatorio {
+  id            Int           @id @default(autoincrement())
+  tipo          TipoRelatorio
+  titulo        String
+  periodoInicio DateTime
+  periodoFim    DateTime
+  arquivo       String
+  tamanhoBytes  Int
+  geradoEm      DateTime      @default(now())
+  geradoPorId   Int
+
+  geradoPor Usuario @relation(fields: [geradoPorId], references: [id])
+}
