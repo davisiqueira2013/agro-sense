@@ -1,19 +1,17 @@
 import { Router } from 'express';
-import { prisma } from '../../lib/prisma.js';
 import { autenticar } from '../../middlewares/autenticar.js';
+import { exigirPerfil } from '../../middlewares/exigirPerfil.js';
+import * as usuariosController from './usuarios.controller.js';
 
-// Módulo de usuários. Por enquanto só a lista de responsáveis;
-// o cadastro completo (ADMIN) entra na etapa do módulo Usuários.
 export const usuariosRoutes = Router();
 
 usuariosRoutes.use(autenticar);
 
-/** GET /api/usuarios/responsaveis — usuários ativos, para os campos de seleção. */
-usuariosRoutes.get('/responsaveis', async (_req, res) => {
-  const responsaveis = await prisma.usuario.findMany({
-    where: { ativo: true },
-    select: { id: true, nome: true, cargo: true },
-    orderBy: { nome: 'asc' },
-  });
-  res.json(responsaveis);
-});
+// Qualquer usuário logado: lista de responsáveis para os formulários.
+usuariosRoutes.get('/responsaveis', usuariosController.responsaveis);
+
+// Gestão de usuários: somente ADMIN (RN02, RN11).
+usuariosRoutes.get('/', exigirPerfil('ADMIN'), usuariosController.listar);
+usuariosRoutes.post('/', exigirPerfil('ADMIN'), usuariosController.criar);
+usuariosRoutes.put('/:id', exigirPerfil('ADMIN'), usuariosController.atualizar);
+usuariosRoutes.patch('/:id/status', exigirPerfil('ADMIN'), usuariosController.alterarStatus);

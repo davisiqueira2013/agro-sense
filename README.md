@@ -4,7 +4,7 @@ Sistema web para **gestão agrícola**, desenvolvido como Projeto Integrador. Re
 
 > 🚧 **Fase 02 em andamento — integração frontend e backend.** Monorepo com frontend (React), backend (API REST em Node.js) e banco PostgreSQL via Docker.
 >
-> Já integrados à API: **Login** (JWT), **Talhões**, **Atividades** (RN04, RN05), **Estoque** (RN06, RN07), **Dashboard** (RN08), **Alertas Climáticos** com previsão real do Open-Meteo (RN09) e **Diário de Campo** (RN10). Usuários e Relatórios ainda usam os dados fictícios de `frontend/src/app/data/mockData.ts`.
+> Já integrados à API: **Login** (JWT), **Talhões**, **Atividades** (RN04, RN05), **Estoque** (RN06, RN07), **Dashboard** (RN08), **Alertas Climáticos** com previsão real do Open-Meteo (RN09) **Diário de Campo** (RN10) e **Usuários** (RN11). Só Relatórios ainda usa os dados fictícios de `frontend/src/app/data/mockData.ts`.
 
 ## 🏗️ Arquitetura
 

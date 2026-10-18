@@ -74,7 +74,8 @@ export async function api<T>(caminho: string, opcoes: RequestInit = {}): Promise
     // Token recusado em uma rota protegida → encerra a sessão no frontend.
     if (resposta.status === 401 && token) {
       tokenStorage.apagar();
-      window.dispatchEvent(new Event(EVENTO_SESSAO_EXPIRADA));
+      // Leva o motivo dado pela API (ex.: sessão expirada, usuário desativado).
+      window.dispatchEvent(new CustomEvent(EVENTO_SESSAO_EXPIRADA, { detail: corpo.erro }));
     }
     // Erro de validação (400): mostra o primeiro campo inválido em vez do genérico "Dados inválidos".
     const primeiroDetalhe = Array.isArray(corpo.detalhes) ? corpo.detalhes[0]?.mensagem : undefined;
