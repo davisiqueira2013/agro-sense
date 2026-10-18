@@ -3,6 +3,9 @@ import { Leaf, Loader2 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { ApiError } from '../../services/api';
 
+/** Validação simples do formato; a API valida de novo (zod). */
+const EMAIL_VALIDO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 const inputClass =
   'w-full bg-[#08100A] border border-[#1A2E20] text-gray-200 text-sm rounded-lg p-3 focus:outline-none focus:border-green-500 transition-colors font-mono placeholder-[#3E5A45]';
 
@@ -17,6 +20,10 @@ export function LoginPage() {
     evento.preventDefault();
     if (!email.trim() || !senha) {
       setErro('Informe e-mail e senha.');
+      return;
+    }
+    if (!EMAIL_VALIDO.test(email.trim())) {
+      setErro('Informe um e-mail válido (ex.: nome@agrosense.com.br).');
       return;
     }
     setErro('');

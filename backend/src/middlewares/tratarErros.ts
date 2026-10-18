@@ -28,6 +28,14 @@ export const tratarErros: ErrorRequestHandler = (erro, _req, res, _next) => {
       codigo: 'DADOS_INVALIDOS',
       detalhes: erro.issues.map((issue) => ({ campo: issue.path.join('.'), mensagem: issue.message })),
     };
+  } else if (
+    erro instanceof Prisma.PrismaClientInitializationError ||
+    (erro instanceof Prisma.PrismaClientKnownRequestError && erro.code.startsWith('P1'))
+  ) {
+    // P1xxx = falha de conexão com o banco (ex.: P1001, banco desligado).
+    status = 503;
+    corpo = { erro: 'Banco de dados indisponível. Tente novamente em instantes', codigo: 'BANCO_INDISPONIVEL' };
+    console.error(`[banco] ${erro.message.split('\n').at(-1)}`);
   } else if (erro instanceof Prisma.PrismaClientKnownRequestError) {
     if (erro.code === 'P2002') {
       status = 409;
