@@ -15,6 +15,8 @@ export const openapi = {
     { name: 'Sistema', description: 'Estado da API e do banco de dados' },
     { name: 'Autenticação', description: 'Login e dados do usuário logado' },
     { name: 'Talhões', description: 'Áreas de cultivo da fazenda (RN03)' },
+    { name: 'Atividades', description: 'Operações de campo (RN04, RN05)' },
+    { name: 'Usuários', description: 'Usuários do sistema' },
   ],
   components: {
     securitySchemes: {
@@ -86,6 +88,35 @@ export const openapi = {
           status: { type: 'string', enum: ['EM_PREPARO', 'ATIVO', 'COLHIDO'], default: 'EM_PREPARO' },
           latitude: { type: 'number', example: -23.55 },
           longitude: { type: 'number', example: -51.46 },
+        },
+      },
+      Atividade: {
+        type: 'object',
+        properties: {
+          id: { type: 'integer', example: 3 },
+          tipo: { type: 'string', enum: ['PLANTIO', 'PULVERIZACAO', 'ADUBACAO', 'COLHEITA', 'IRRIGACAO'] },
+          status: { type: 'string', enum: ['AGENDADA', 'EM_ANDAMENTO', 'CONCLUIDA'], description: 'Status gravado' },
+          situacao: {
+            type: 'string',
+            enum: ['AGENDADA', 'EM_ANDAMENTO', 'CONCLUIDA', 'ATRASADA'],
+            description: 'Status exibido. ATRASADA é calculada pela API (RN04): não concluída e data prevista já passou',
+          },
+          dataPrevista: { type: 'string', format: 'date-time' },
+          dataConclusao: { type: 'string', format: 'date-time', nullable: true },
+          observacao: { type: 'string', nullable: true },
+          talhao: { type: 'object', properties: { id: { type: 'integer' }, nome: { type: 'string', example: 'Talhão B2' } } },
+          responsavel: { type: 'object', properties: { id: { type: 'integer' }, nome: { type: 'string', example: 'Carlos Mendes' } } },
+        },
+      },
+      AtividadeEntrada: {
+        type: 'object',
+        required: ['tipo', 'talhaoId', 'responsavelId', 'dataPrevista'],
+        properties: {
+          tipo: { type: 'string', enum: ['PLANTIO', 'PULVERIZACAO', 'ADUBACAO', 'COLHEITA', 'IRRIGACAO'] },
+          talhaoId: { type: 'integer', example: 1 },
+          responsavelId: { type: 'integer', example: 3 },
+          dataPrevista: { type: 'string', format: 'date', example: '2026-10-25' },
+          observacao: { type: 'string', example: 'Aplicar no início da manhã' },
         },
       },
       Health: {
@@ -184,6 +215,71 @@ export const openapi = {
           '404': { description: 'Não encontrado', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } },
           '409': { description: 'Talhão possui atividades (RN03)', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } },
         },
+      },
+    },
+    '/': {
+      get: {
+        tags: ['Sistema'],
+        summary: 'Página inicial da API (nome, versão e links)',
+        responses: { '200': { description: 'Informações da API' } },
+      },
+    },
+    '/atividades': {
+      get: {
+        tags: ['Atividades'],
+        summary: 'Lista atividades (atrasadas primeiro) com filtros',
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          { name: 'situacao', in: 'query', schema: { type: 'string', enum: ['AGENDADA', 'EM_ANDAMENTO', 'CONCLUIDA', 'ATRASADA'] } },
+          { name: 'tipo', in: 'query', schema: { type: 'string', enum: ['PLANTIO', 'PULVERIZACAO', 'ADUBACAO', 'COLHEITA', 'IRRIGACAO'] } },
+          { name: 'talhaoId', in: 'query', schema: { type: 'integer' } },
+        ],
+        responses: { '200': { description: 'Lista de atividades', content: { 'application/json': { schema: { type: 'array', items: { $ref: '#/components/schemas/Atividade' } } } } } },
+      },
+      post: {
+        tags: ['Atividades'],
+        summary: 'Agenda uma atividade (ADMIN, TECNICO)',
+        security: [{ bearerAuth: [] }],
+        requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/AtividadeEntrada' } } } },
+        responses: {
+          '201': { description: 'Atividade criada', content: { 'application/json': { schema: { $ref: '#/components/schemas/Atividade' } } } },
+          '400': { description: 'Dados inválidos', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } },
+          '409': { description: 'RN05: pulverização com alerta de vento forte no talhão', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } },
+          '422': { description: 'Talhão inexistente ou responsável inativo', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } },
+        },
+      },
+    },
+    '/atividades/{id}': {
+      parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'integer' } }],
+      get: { tags: ['Atividades'], summary: 'Detalhe da atividade', security: [{ bearerAuth: [] }], responses: { '200': { description: 'Atividade', content: { 'application/json': { schema: { $ref: '#/components/schemas/Atividade' } } } }, '404': { description: 'Não encontrada', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } } } },
+      put: {
+        tags: ['Atividades'],
+        summary: 'Edita uma atividade não concluída (ADMIN, TECNICO)',
+        security: [{ bearerAuth: [] }],
+        requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/AtividadeEntrada' } } } },
+        responses: { '200': { description: 'Atividade', content: { 'application/json': { schema: { $ref: '#/components/schemas/Atividade' } } } }, '409': { description: 'RN05: pulverização com alerta de vento forte no talhão', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } }, '422': { description: 'Atividade já concluída', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } } },
+      },
+      delete: { tags: ['Atividades'], summary: 'Exclui a atividade (ADMIN)', security: [{ bearerAuth: [] }], responses: { '204': { description: 'Excluída' }, '404': { description: 'Não encontrada', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } } } },
+    },
+    '/atividades/{id}/status': {
+      parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'integer' } }],
+      patch: {
+        tags: ['Atividades'],
+        summary: 'Inicia ou conclui a atividade (RN04) — ADMIN, TECNICO',
+        security: [{ bearerAuth: [] }],
+        requestBody: {
+          required: true,
+          content: { 'application/json': { schema: { type: 'object', properties: { status: { type: 'string', enum: ['EM_ANDAMENTO', 'CONCLUIDA'] } } } } },
+        },
+        responses: { '200': { description: 'Atividade', content: { 'application/json': { schema: { $ref: '#/components/schemas/Atividade' } } } }, '409': { description: 'RN05: iniciar pulverização com vento forte', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } }, '422': { description: 'Transição inválida (ex.: já concluída)', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } } },
+      },
+    },
+    '/usuarios/responsaveis': {
+      get: {
+        tags: ['Usuários'],
+        summary: 'Usuários ativos que podem ser responsáveis por atividades',
+        security: [{ bearerAuth: [] }],
+        responses: { '200': { description: 'Lista com id, nome e cargo' } },
       },
     },
     '/health': {

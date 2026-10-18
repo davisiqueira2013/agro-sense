@@ -45,13 +45,36 @@ export type TalhaoEntrada = {
   longitude?: number;
 };
 
+export type TipoAtividade = 'PLANTIO' | 'PULVERIZACAO' | 'ADUBACAO' | 'COLHEITA' | 'IRRIGACAO';
+
+/** Situação exibida; ATRASADA é calculada pela API (RN04). */
+export type SituacaoAtividade = 'AGENDADA' | 'EM_ANDAMENTO' | 'CONCLUIDA' | 'ATRASADA';
+
+/** Atividade como devolvida por GET /api/atividades. */
 export type Atividade = {
-  status: 'Concluído' | 'Em andamento' | 'Atrasado' | 'Agendado';
-  tipo: string;
-  talhao: string;
-  data: string;
-  responsavel: string;
+  id: number;
+  tipo: TipoAtividade;
+  status: 'AGENDADA' | 'EM_ANDAMENTO' | 'CONCLUIDA';
+  situacao: SituacaoAtividade;
+  dataPrevista: string;
+  dataConclusao: string | null;
+  observacao: string | null;
+  talhao: { id: number; nome: string };
+  responsavel: { id: number; nome: string };
 };
+
+/** Corpo de POST /api/atividades e PUT /api/atividades/:id. */
+export type AtividadeEntrada = {
+  tipo: TipoAtividade;
+  talhaoId: number;
+  responsavelId: number;
+  /** AAAA-MM-DD */
+  dataPrevista: string;
+  observacao?: string;
+};
+
+/** Usuário que pode receber atividades (GET /api/usuarios/responsaveis). */
+export type Responsavel = { id: number; nome: string; cargo: string };
 
 export type RegistroDiario = {
   data: string;
