@@ -44,7 +44,7 @@ export default function App() {
   };
 
   const paginas: Record<TabId, JSX.Element> = {
-    Dashboard: <DashboardPage onVerAlertas={() => setAbaAtual('Alertas Climáticos')} />,
+    Dashboard: <DashboardPage onVerAlertas={() => setAbaAtual('Alertas Climáticos')} onVerAtividades={() => setAbaAtual('Atividades')} />,
     Talhões: <TalhoesPage />,
     Atividades: <AtividadesPage />,
     'Diário de Campo': <DiarioCampoPage />,

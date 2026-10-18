@@ -36,3 +36,12 @@ const moeda = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL
 
 /** 49891.5 → "R$ 49.891,50" */
 export const formatarMoeda = (valor: number) => moeda.format(valor);
+
+const moedaInteira = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
+
+/** 19657.5 → "R$ 19.658" (cards, sem centavos). */
+export const formatarMoedaInteira = (valor: number) => moedaInteira.format(valor);
+
+/** 19657.5 → "R$ 19,7 mil" (eixos de gráfico). */
+export const formatarMoedaCompacta = (valor: number) =>
+  valor >= 1000 ? `R$ ${formatarNumero(Math.round(valor / 100) / 10)} mil` : formatarMoedaInteira(valor);
