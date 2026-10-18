@@ -1,25 +1,34 @@
 import cors from 'cors';
 import express from 'express';
+import swaggerUi from 'swagger-ui-express';
+import { openapi } from './docs/openapi.js';
+import { prisma } from './lib/prisma.js';
+import { rotaNaoEncontrada, tratarErros } from './middlewares/tratarErros.js';
 
-// Monta a aplicação Express: middlewares globais e rotas.
-// Os módulos (auth, talhões, atividades...) serão registrados aqui
-// nas próximas etapas, sempre sob o prefixo /api.
+// Monta a aplicação Express: middlewares globais, documentação e rotas.
+// Os módulos (auth, talhões, atividades...) são registrados sob /api.
 export function criarApp() {
   const app = express();
 
   app.use(cors({ origin: process.env.CORS_ORIGIN ?? 'http://localhost:5173' }));
   app.use(express.json());
 
-  // Verificação simples de que a API está no ar.
-  // Na etapa 3 passa a conferir também a conexão com o banco.
-  app.get('/api/health', (_req, res) => {
-    res.json({ status: 'ok', servico: 'agro-sense-api', horario: new Date().toISOString() });
+  // Documentação navegável da API.
+  app.get('/api/docs.json', (_req, res) => res.json(openapi));
+  app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(openapi, { customSiteTitle: 'Agro Sense API' }));
+
+  // Confere se a API está no ar e se o banco responde.
+  app.get('/api/health', async (_req, res) => {
+    try {
+      await prisma.$queryRaw`SELECT 1`;
+      res.json({ status: 'ok', servico: 'agro-sense-api', banco: 'conectado', horario: new Date().toISOString() });
+    } catch {
+      res.status(503).json({ erro: 'Banco de dados indisponível', codigo: 'BANCO_INDISPONIVEL' });
+    }
   });
 
-  // Rota inexistente → 404 no formato padrão de erro da API.
-  app.use((_req, res) => {
-    res.status(404).json({ erro: 'Rota não encontrada', codigo: 'NAO_ENCONTRADO' });
-  });
+  app.use(rotaNaoEncontrada);
+  app.use(tratarErros);
 
   return app;
 }

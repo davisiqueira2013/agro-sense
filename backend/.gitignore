@@ -1,0 +1,5 @@
+node_modules/
+dist/
+.env
+# Cliente do Prisma (gerado por "npm run db:generate" / postinstall)
+src/generated/
