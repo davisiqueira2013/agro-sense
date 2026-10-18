@@ -2,7 +2,7 @@
 
 Sistema web para **gestão agrícola**, desenvolvido como Projeto Integrador. Reúne em um único painel o que um produtor ou equipe de campo precisa no dia a dia: talhões, atividades, diário de campo, estoque de insumos, alertas climáticos, relatórios e usuários.
 
-> 🚧 **Fase 02 em andamento — integração frontend e backend.** O repositório agora é um monorepo com o frontend (React) e o backend (API REST em Node.js), além do banco PostgreSQL via Docker. Enquanto os módulos da API não estiverem prontos, as telas usam os dados fictícios de `frontend/src/app/data/mockData.ts`.
+> 🚧 **Fase 02 em andamento — integração frontend e backend.** O repositório agora é um monorepo com o frontend (React) e o backend (API REST em Node.js), além do banco PostgreSQL via Docker. O **login já é real** (JWT validado pela API). Os demais módulos ainda usam os dados fictícios de `frontend/src/app/data/mockData.ts` e serão integrados um a um.
 
 ## 🏗️ Arquitetura
 
@@ -33,7 +33,7 @@ Navegador (React SPA)  ──HTTP + JSON / JWT──▶  API REST (Express)  ─
 | Camada | Tecnologias |
 | --- | --- |
 | Frontend | React 18, TypeScript, Vite 5, Tailwind CSS v4, shadcn/ui |
-| Backend | Node.js 22, Express 5, TypeScript, Prisma ORM 7, Zod, Swagger (OpenAPI 3) |
+| Backend | Node.js 22, Express 5, TypeScript, Prisma ORM 7, Zod, JWT (jsonwebtoken), bcryptjs, Swagger (OpenAPI 3) |
 | Banco de dados | PostgreSQL 16 (Docker) |
 
 ## ✅ Pré-requisitos
@@ -102,7 +102,7 @@ A documentação interativa da API (Swagger) fica em http://localhost:3333/api/d
 npm run dev:web
 ```
 
-Acesse http://localhost:5173.
+Acesse http://localhost:5173 e entre com um dos usuários da tabela acima (ex.: `rodrigo@agrosense.com.br` / `agrosense123`). A API precisa estar rodando.
 
 ## 📜 Scripts da raiz
 
@@ -132,8 +132,9 @@ agro-sense/
 │   │   ├── app.ts               # Express: CORS, JSON, Swagger, rotas /api, erros
 │   │   ├── server.ts            # Sobe a API na porta 3333
 │   │   ├── docs/openapi.ts      # Especificação exibida em /api/docs
-│   │   ├── lib/                 # prisma.ts (conexão) e AppError.ts
-│   │   └── middlewares/         # tratarErros.ts (formato padrão de erro)
+│   │   ├── lib/                 # prisma.ts, token.ts (JWT), env.ts, AppError.ts
+│   │   ├── middlewares/         # autenticar, exigirPerfil, tratarErros
+│   │   └── modules/auth/        # POST /auth/login e GET /auth/me
 │   ├── prisma.config.ts         # Configuração do Prisma (schema, migrations, seed)
 │   ├── .env.example             # PORT, CORS_ORIGIN, DATABASE_URL, JWT_SECRET
 │   ├── package.json
@@ -141,6 +142,8 @@ agro-sense/
 ├── frontend/
 │   ├── src/
 │   │   ├── config.ts            # VITE_API_URL
+│   │   ├── services/            # api.ts (cliente HTTP + token) e um service por módulo
+│   │   ├── contexts/            # AuthContext (usuário logado, login e logout)
 │   │   └── app/
 │   │       ├── App.tsx          # Autenticação e navegação entre telas
 │   │       ├── pages/           # Uma tela por arquivo

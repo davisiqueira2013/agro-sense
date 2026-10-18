@@ -63,7 +63,8 @@ export const usuarios: Usuario[] = [
   { nome: 'José Silva', email: 'jose.silva@agrosense.com.br', cargo: 'Consultor Externo', status: 'Inativo' },
 ];
 
-export const usuarioLogado = { nome: 'Rodrigo Figueiredo', perfil: 'Admin', fazenda: 'Fazenda Figueiredo' };
+/** Nome da propriedade exibido na barra lateral. */
+export const NOME_FAZENDA = 'Fazenda Figueiredo';
 
 export const indicadoresDashboard: IndicadorDashboard[] = [
   { titulo: 'Total de Talhões', valor: '6', detalhe: '3 ativos agora', tone: 'green', icone: 'talhoes' },

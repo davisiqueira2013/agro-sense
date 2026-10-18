@@ -1,10 +1,12 @@
 import { Leaf, LogOut } from 'lucide-react';
-import { menuItems } from '../../navigation';
+import type { MenuItem } from '../../navigation';
 import type { TabId } from '../../types';
 import { Avatar } from '../shared/Avatar';
 
 type SidebarProps = {
   abaAtual: TabId;
+  /** Itens visíveis para o perfil do usuário logado. */
+  itens: MenuItem[];
   onTrocarAba: (aba: TabId) => void;
   usuario: { nome: string; perfil: string; fazenda: string };
   /** Contadores exibidos ao lado de itens do menu (ex.: alertas ativos). */
@@ -12,7 +14,7 @@ type SidebarProps = {
   onSair: () => void;
 };
 
-export function Sidebar({ abaAtual, onTrocarAba, usuario, badges = {}, onSair }: SidebarProps) {
+export function Sidebar({ abaAtual, itens, onTrocarAba, usuario, badges = {}, onSair }: SidebarProps) {
   return (
     <aside className="w-64 bg-[#0A120C] border-r border-[#1A2E20] flex flex-col h-screen fixed left-0 top-0 z-20">
       <div className="flex items-center gap-3 p-6 border-b border-[#1A2E20]">
@@ -26,7 +28,7 @@ export function Sidebar({ abaAtual, onTrocarAba, usuario, badges = {}, onSair }:
       </div>
 
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-        {menuItems.map((item) => {
+        {itens.map((item) => {
           const ativo = abaAtual === item.id;
           const badge = badges[item.id];
           return (
