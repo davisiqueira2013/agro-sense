@@ -1,3 +1,4 @@
+import './lib/env.js'; // confere as variáveis obrigatórias antes de subir
 import { criarApp } from './app.js';
 import { prisma } from './lib/prisma.js';
 

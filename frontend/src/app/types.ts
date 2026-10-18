@@ -80,3 +80,15 @@ export type CustoMensal = {
   mes: string;
   valor: number;
 };
+
+export type Perfil = 'ADMIN' | 'TECNICO' | 'LEITOR';
+
+/** Usuário autenticado, como devolvido por /api/auth/login e /api/auth/me. */
+export type UsuarioLogado = {
+  id: number;
+  nome: string;
+  email: string;
+  cargo: string;
+  perfil: Perfil;
+  ativo: boolean;
+};

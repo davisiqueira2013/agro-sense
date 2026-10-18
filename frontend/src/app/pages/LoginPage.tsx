@@ -1,30 +1,36 @@
 import { useState, type FormEvent } from 'react';
-import { Leaf } from 'lucide-react';
-
-export type Credenciais = { email: string; senha: string };
-
-type LoginPageProps = {
-  /** Chamado ao enviar o formulário. Na integração, fará POST /api/auth/login. */
-  onLogin: (credenciais: Credenciais) => void;
-};
+import { Leaf, Loader2 } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
+import { ApiError } from '../../services/api';
 
 const inputClass =
   'w-full bg-[#08100A] border border-[#1A2E20] text-gray-200 text-sm rounded-lg p-3 focus:outline-none focus:border-green-500 transition-colors font-mono placeholder-[#3E5A45]';
 
-export function LoginPage({ onLogin }: LoginPageProps) {
+export function LoginPage() {
+  const { login, aviso } = useAuth();
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [erro, setErro] = useState('');
+  const [enviando, setEnviando] = useState(false);
 
-  const enviar = (evento: FormEvent) => {
+  const enviar = async (evento: FormEvent) => {
     evento.preventDefault();
     if (!email.trim() || !senha) {
       setErro('Informe e-mail e senha.');
       return;
     }
     setErro('');
-    onLogin({ email: email.trim(), senha });
+    setEnviando(true);
+    try {
+      // POST /api/auth/login — em caso de sucesso o AuthContext abre o sistema.
+      await login(email.trim(), senha);
+    } catch (falha) {
+      setErro(falha instanceof ApiError ? falha.message : 'Não foi possível entrar. Tente novamente.');
+      setEnviando(false);
+    }
   };
+
+  const mensagem = erro || aviso;
 
   return (
     <div className="min-h-screen bg-[#08100A] flex flex-col items-center justify-center font-sans text-gray-200 px-4">
@@ -66,17 +72,19 @@ export function LoginPage({ onLogin }: LoginPageProps) {
           />
         </div>
 
-        {erro && (
-          <p role="alert" className="text-sm font-mono text-red-400">
-            {erro}
+        {mensagem && (
+          <p role="alert" className={`text-sm font-mono ${erro ? 'text-red-400' : 'text-yellow-500'}`}>
+            {mensagem}
           </p>
         )}
 
         <button
           type="submit"
-          className="w-full bg-[#4CAF50] hover:bg-[#43A047] text-white font-semibold rounded-lg p-3 mt-4 transition-colors cursor-pointer shadow-lg"
+          disabled={enviando}
+          className="w-full flex items-center justify-center gap-2 bg-[#4CAF50] hover:bg-[#43A047] text-white font-semibold rounded-lg p-3 mt-4 transition-colors cursor-pointer shadow-lg disabled:opacity-70 disabled:cursor-wait"
         >
-          Entrar
+          {enviando && <Loader2 size={18} className="animate-spin" />}
+          {enviando ? 'Entrando...' : 'Entrar'}
         </button>
       </form>
     </div>

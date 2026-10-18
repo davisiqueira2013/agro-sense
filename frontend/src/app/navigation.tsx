@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react';
 import { Activity, BookOpen, CloudLightning, FileText, Layers, LayoutGrid, Package, Users } from 'lucide-react';
-import type { TabId } from './types';
+import type { Perfil, TabId } from './types';
 
-export type MenuItem = { id: TabId; icon: ReactNode };
+/** perfis: quem vê o item (ausente = todos os perfis). */
+export type MenuItem = { id: TabId; icon: ReactNode; perfis?: Perfil[] };
 
 /** Itens do menu lateral, na ordem em que aparecem. */
 export const menuItems: MenuItem[] = [
@@ -13,5 +14,15 @@ export const menuItems: MenuItem[] = [
   { id: 'Estoque', icon: <Package size={20} /> },
   { id: 'Alertas Climáticos', icon: <CloudLightning size={20} /> },
   { id: 'Relatórios PDF', icon: <FileText size={20} /> },
-  { id: 'Usuários', icon: <Users size={20} /> },
+  // RN02 — só administradores gerenciam usuários.
+  { id: 'Usuários', icon: <Users size={20} />, perfis: ['ADMIN'] },
 ];
+
+/** Itens do menu que o perfil pode acessar. */
+export const menuDoPerfil = (perfil: Perfil) => menuItems.filter((item) => !item.perfis || item.perfis.includes(perfil));
+
+export const nomeDoPerfil: Record<Perfil, string> = {
+  ADMIN: 'Administrador',
+  TECNICO: 'Técnico',
+  LEITOR: 'Leitor',
+};

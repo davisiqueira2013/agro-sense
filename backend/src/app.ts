@@ -4,6 +4,7 @@ import swaggerUi from 'swagger-ui-express';
 import { openapi } from './docs/openapi.js';
 import { prisma } from './lib/prisma.js';
 import { rotaNaoEncontrada, tratarErros } from './middlewares/tratarErros.js';
+import { authRoutes } from './modules/auth/auth.routes.js';
 
 // Monta a aplicação Express: middlewares globais, documentação e rotas.
 // Os módulos (auth, talhões, atividades...) são registrados sob /api.
@@ -26,6 +27,9 @@ export function criarApp() {
       res.status(503).json({ erro: 'Banco de dados indisponível', codigo: 'BANCO_INDISPONIVEL' });
     }
   });
+
+  // Módulos da API.
+  app.use('/api/auth', authRoutes);
 
   app.use(rotaNaoEncontrada);
   app.use(tratarErros);
