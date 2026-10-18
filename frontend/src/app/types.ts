@@ -14,15 +14,35 @@ export type TabId =
 /** Paleta semântica usada em badges, ícones e bordas. */
 export type Tone = 'green' | 'yellow' | 'red' | 'blue' | 'gray';
 
+export type StatusTalhao = 'EM_PREPARO' | 'ATIVO' | 'COLHIDO';
+
+/** Talhão como devolvido por GET /api/talhoes. */
 export type Talhao = {
+  id: number;
   nome: string;
-  local: string;
+  municipio: string;
+  uf: string;
   cultura: string;
-  area: string;
-  temp: string;
-  umidade: string;
-  data: string;
-  status: 'Ativo' | 'Em preparo' | 'Colhido';
+  areaHa: number;
+  status: StatusTalhao;
+  latitude: number | null;
+  longitude: number | null;
+  temperaturaAtual: number | null;
+  umidadeAtual: number | null;
+  climaAtualizadoEm: string | null;
+  _count: { atividades: number };
+};
+
+/** Corpo enviado em POST /api/talhoes e PUT /api/talhoes/:id. */
+export type TalhaoEntrada = {
+  nome: string;
+  municipio: string;
+  uf: string;
+  cultura: string;
+  areaHa: number;
+  status: StatusTalhao;
+  latitude?: number;
+  longitude?: number;
 };
 
 export type Atividade = {
