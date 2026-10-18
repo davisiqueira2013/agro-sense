@@ -135,7 +135,7 @@ async function main() {
   // ---------- Alertas climáticos ----------
   await prisma.alertaClimatico.create({
     data: {
-      tipo: 'GEADA', severidade: 'CRITICO', titulo: 'Risco de Geada Extrema', inicio: dia(0, 0), fim: dia(2, 0),
+      tipo: 'GEADA', severidade: 'CRITICO', origem: 'MANUAL', titulo: 'Risco de Geada Extrema', inicio: dia(0, 0), fim: dia(2, 0),
       descricao: 'Previsão de temperatura abaixo de 2°C para as próximas 48 horas.',
       talhoes: { connect: [{ id: b2.id }, { id: f6.id }] },
     },

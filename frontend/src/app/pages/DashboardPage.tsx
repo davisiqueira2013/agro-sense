@@ -7,11 +7,9 @@ import { Card } from '../components/shared/Card';
 import { ErroCarregamento } from '../components/shared/Estados';
 import { PageHeader } from '../components/shared/PageHeader';
 import { formatarMoedaInteira } from '../lib/formatar';
-import { toneClasses } from '../lib/tones';
+import { nomeDaSeveridade, toneClasses, toneDaSeveridade } from '../lib/tones';
 import type { CustoMensal, ResumoDashboard, Severidade, Tone } from '../types';
 
-const toneDaSeveridade: Record<Severidade, Tone> = { CRITICO: 'red', ATENCAO: 'yellow', AVISO: 'blue' };
-const nomeDaSeveridade: Record<Severidade, string> = { CRITICO: 'Crítico', ATENCAO: 'Atenção', AVISO: 'Aviso' };
 const iconeDaSeveridade: Record<Severidade, ReactNode> = {
   CRITICO: <AlertCircle size={14} />,
   ATENCAO: <CloudLightning size={14} />,

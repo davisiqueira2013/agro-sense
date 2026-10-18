@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Leaf, Loader2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { alertasService } from '../services/alertasService';
 import { Header } from './components/layout/Header';
 import { Sidebar } from './components/layout/Sidebar';
-import { NOME_FAZENDA, alertas } from './data/mockData';
+import { NOME_FAZENDA } from './data/mockData';
 import { menuDoPerfil, nomeDoPerfil } from './navigation';
 import { AlertasPage } from './pages/AlertasPage';
 import { AtividadesPage } from './pages/AtividadesPage';
@@ -19,6 +20,17 @@ import type { TabId } from './types';
 export default function App() {
   const { usuario, carregando, logout } = useAuth();
   const [abaAtual, setAbaAtual] = useState<TabId>('Dashboard');
+  const [alertasAtivos, setAlertasAtivos] = useState(0);
+
+  // Contador de alertas ativos no menu e no sino (GET /api/alertas).
+  const atualizarContador = useCallback(() => {
+    alertasService.listar('ativos').then((lista) => setAlertasAtivos(lista.length)).catch(() => undefined);
+  }, []);
+
+  // Atualiza ao entrar e a cada troca de tela.
+  useEffect(() => {
+    if (usuario) atualizarContador();
+  }, [usuario, abaAtual, atualizarContador]);
 
   // Conferindo o token salvo com a API (GET /api/auth/me).
   if (carregando) {
@@ -49,7 +61,7 @@ export default function App() {
     Atividades: <AtividadesPage />,
     'Diário de Campo': <DiarioCampoPage />,
     Estoque: <EstoquePage />,
-    'Alertas Climáticos': <AlertasPage />,
+    'Alertas Climáticos': <AlertasPage onAlteracao={atualizarContador} />,
     'Relatórios PDF': <RelatoriosPage />,
     Usuários: <UsuariosPage />,
   };
@@ -61,11 +73,11 @@ export default function App() {
         itens={itens}
         onTrocarAba={setAbaAtual}
         usuario={{ nome: usuario.nome, perfil: nomeDoPerfil[usuario.perfil], fazenda: NOME_FAZENDA }}
-        badges={{ 'Alertas Climáticos': alertas.length }}
+        badges={{ 'Alertas Climáticos': alertasAtivos }}
         onSair={sair}
       />
       <main className="flex-1 ml-64 min-h-screen bg-[#08100A] text-gray-200">
-        <Header abaAtual={aba} nomeUsuario={usuario.nome} temNotificacao={alertas.length > 0} />
+        <Header abaAtual={aba} nomeUsuario={usuario.nome} temNotificacao={alertasAtivos > 0} />
         <div className="p-8 max-w-7xl mx-auto">{paginas[aba]}</div>
       </main>
     </div>

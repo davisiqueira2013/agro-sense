@@ -1,11 +1,10 @@
 // Dados fictícios do protótipo (Fase 01).
-// Talhões, atividades, estoque e usuário logado já vêm da API.
+// Talhões, atividades, estoque, alertas e usuário logado já vêm da API.
 // Cada array restante será substituído por uma chamada à API na Fase 02,
 // por meio da camada src/services. Mantê-los separados das telas
 // permite trocar a fonte de dados sem alterar os componentes visuais.
 
 import type {
-  AlertaClimatico,
   RegistroDiario,
   Relatorio,
   Usuario,
@@ -14,12 +13,6 @@ import type {
 export const registrosDiario: RegistroDiario[] = [
   { data: '10 Dez 2026', autor: 'Ana Ferreira', titulo: 'Identificação de praga inicial', texto: 'Encontrado foco inicial de mosca-branca nas bordaduras do Talhão A1. Recomendada aplicação direcionada nos próximos 2 dias.', tag: 'Pragas' },
   { data: '08 Dez 2026', autor: 'Carlos Mendes', titulo: 'Condições do solo pós-chuva', texto: 'Avaliamos a umidade do solo no Talhão C3. Solo em capacidade de campo excelente para entrada de maquinário pesado.', tag: 'Solo' },
-];
-
-export const alertas: AlertaClimatico[] = [
-  { severidade: 'Crítico', titulo: 'Risco de Geada Extrema', local: 'Talhão B2, Talhão F6', descricao: 'Previsão de temperatura abaixo de 2°C para as próximas 48 horas.' },
-  { severidade: 'Atenção', titulo: 'Chuva Intensa', local: 'Toda a fazenda', descricao: 'Acumulado previsto de 80mm em 24h. Risco de erosão em áreas preparadas.' },
-  { severidade: 'Aviso', titulo: 'Vento Forte', local: 'Talhão A1, Talhão C3', descricao: 'Rajadas acima de 40km/h. Suspender pulverizações agendadas.' },
 ];
 
 export const relatorios: Relatorio[] = [
