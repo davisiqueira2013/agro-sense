@@ -2,7 +2,7 @@
 // O Tailwind só gera classes que aparecem literalmente no código; por isso
 // não se pode montar nomes como `text-${cor}-500` em tempo de execução.
 
-import type { AlertaClimatico, Atividade, Insumo, StatusTalhao, Tone } from '../types';
+import type { AlertaClimatico, Insumo, SituacaoAtividade, StatusTalhao, TipoAtividade, Tone } from '../types';
 
 type ToneClasses = {
   text: string;
@@ -62,11 +62,26 @@ export const nomeDoStatusTalhao: Record<StatusTalhao, string> = {
   COLHIDO: 'Colhido',
 };
 
-export const toneDaAtividade: Record<Atividade['status'], Tone> = {
-  Concluído: 'green',
-  'Em andamento': 'yellow',
-  Atrasado: 'red',
-  Agendado: 'blue',
+export const toneDaSituacao: Record<SituacaoAtividade, Tone> = {
+  CONCLUIDA: 'green',
+  EM_ANDAMENTO: 'yellow',
+  ATRASADA: 'red',
+  AGENDADA: 'blue',
+};
+
+export const nomeDaSituacao: Record<SituacaoAtividade, string> = {
+  AGENDADA: 'Agendada',
+  EM_ANDAMENTO: 'Em andamento',
+  CONCLUIDA: 'Concluída',
+  ATRASADA: 'Atrasada',
+};
+
+export const nomeDoTipoAtividade: Record<TipoAtividade, string> = {
+  PLANTIO: 'Plantio',
+  PULVERIZACAO: 'Pulverização',
+  ADUBACAO: 'Adubação',
+  COLHEITA: 'Colheita',
+  IRRIGACAO: 'Irrigação',
 };
 
 export const toneDoInsumo: Record<Insumo['status'], Tone> = {

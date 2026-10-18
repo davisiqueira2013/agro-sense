@@ -1,12 +1,11 @@
 // Dados fictícios do protótipo (Fase 01).
-// Talhões e usuário logado já vêm da API.
+// Talhões, atividades e usuário logado já vêm da API.
 // Cada array restante será substituído por uma chamada à API na Fase 02,
 // por meio da camada src/services. Mantê-los separados das telas
 // permite trocar a fonte de dados sem alterar os componentes visuais.
 
 import type {
   AlertaClimatico,
-  Atividade,
   CustoMensal,
   IndicadorDashboard,
   Insumo,
@@ -16,12 +15,6 @@ import type {
 } from '../types';
 
 
-export const atividades: Atividade[] = [
-  { status: 'Concluído', tipo: 'Plantio', talhao: 'Talhão A1', data: '15/11/2026', responsavel: 'Carlos Mendes' },
-  { status: 'Em andamento', tipo: 'Pulverização', talhao: 'Talhão C3', data: 'Hoje', responsavel: 'Ana Ferreira' },
-  { status: 'Atrasado', tipo: 'Colheita', talhao: 'Talhão B2', data: '08/12/2026', responsavel: 'José Silva' },
-  { status: 'Agendado', tipo: 'Adubação', talhao: 'Talhão E5', data: '12/12/2026', responsavel: 'Carlos Mendes' },
-];
 
 export const registrosDiario: RegistroDiario[] = [
   { data: '10 Dez 2026', autor: 'Ana Ferreira', titulo: 'Identificação de praga inicial', texto: 'Encontrado foco inicial de mosca-branca nas bordaduras do Talhão A1. Recomendada aplicação direcionada nos próximos 2 dias.', tag: 'Pragas' },
