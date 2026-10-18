@@ -19,6 +19,7 @@ export const openapi = {
     { name: 'Estoque', description: 'Insumos e movimentações (RN06, RN07)' },
     { name: 'Dashboard', description: 'Indicadores calculados no backend (RN08)' },
     { name: 'Alertas', description: 'Alertas climáticos e previsão do tempo via Open-Meteo (RN09)' },
+    { name: 'Diário de Campo', description: 'Registros agronômicos da equipe (RN10)' },
     { name: 'Usuários', description: 'Usuários do sistema' },
   ],
   components: {
@@ -449,6 +450,54 @@ export const openapi = {
         summary: 'Encerra um alerta (ADMIN, TECNICO)',
         security: [{ bearerAuth: [] }],
         responses: { '200': { description: 'Alerta encerrado', content: { 'application/json': { schema: { $ref: '#/components/schemas/AlertaClimatico' } } } }, '404': { description: 'Não encontrado', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } }, '422': { description: 'Já encerrado', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } } },
+      },
+    },
+    '/diario': {
+      get: {
+        tags: ['Diário de Campo'],
+        summary: 'Lista registros (mais recentes primeiro)',
+        security: [{ bearerAuth: [] }],
+        parameters: [
+          { name: 'busca', in: 'query', schema: { type: 'string' }, description: 'Título ou texto' },
+          { name: 'categoria', in: 'query', schema: { type: 'string', enum: ['PRAGAS', 'SOLO', 'CLIMA', 'DOENCAS', 'GERAL'] } },
+          { name: 'talhaoId', in: 'query', schema: { type: 'integer' } },
+        ],
+        responses: { '200': { description: 'Registros com autor e talhão' } },
+      },
+      post: {
+        tags: ['Diário de Campo'],
+        summary: 'Cria registro; o autor é o usuário do token (RN10) — ADMIN, TECNICO',
+        security: [{ bearerAuth: [] }],
+        requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', required: ['titulo', 'texto'], properties: {
+            titulo: { type: 'string', example: 'Identificação de praga inicial' },
+            texto: { type: 'string', example: 'Foco de mosca-branca nas bordaduras do talhão.' },
+            categoria: { type: 'string', enum: ['PRAGAS', 'SOLO', 'CLIMA', 'DOENCAS', 'GERAL'], default: 'GERAL' },
+            talhaoId: { type: 'integer', nullable: true },
+            data: { type: 'string', format: 'date', description: 'Padrão: agora' },
+          } } } } },
+        responses: { '201': { description: 'Registro criado' }, '400': { description: 'Dados inválidos', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } }, '422': { description: 'Talhão inexistente', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } } },
+      },
+    },
+    '/diario/{id}': {
+      parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'integer' } }],
+      put: {
+        tags: ['Diário de Campo'],
+        summary: 'Edita registro — só o autor ou ADMIN (RN10)',
+        security: [{ bearerAuth: [] }],
+        requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', required: ['titulo', 'texto'], properties: {
+            titulo: { type: 'string', example: 'Identificação de praga inicial' },
+            texto: { type: 'string', example: 'Foco de mosca-branca nas bordaduras do talhão.' },
+            categoria: { type: 'string', enum: ['PRAGAS', 'SOLO', 'CLIMA', 'DOENCAS', 'GERAL'], default: 'GERAL' },
+            talhaoId: { type: 'integer', nullable: true },
+            data: { type: 'string', format: 'date', description: 'Padrão: agora' },
+          } } } } },
+        responses: { '200': { description: 'Registro atualizado' }, '403': { description: 'Não é o autor nem ADMIN', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } }, '404': { description: 'Não encontrado', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } } },
+      },
+      delete: {
+        tags: ['Diário de Campo'],
+        summary: 'Exclui registro — só o autor ou ADMIN (RN10)',
+        security: [{ bearerAuth: [] }],
+        responses: { '204': { description: 'Excluído' }, '403': { description: 'Não é o autor nem ADMIN', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } }, '404': { description: 'Não encontrado', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } } },
       },
     },
     '/usuarios/responsaveis': {

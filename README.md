@@ -4,7 +4,7 @@ Sistema web para **gestão agrícola**, desenvolvido como Projeto Integrador. Re
 
 > 🚧 **Fase 02 em andamento — integração frontend e backend.** Monorepo com frontend (React), backend (API REST em Node.js) e banco PostgreSQL via Docker.
 >
-> Já integrados à API: **Login** (JWT), **Talhões**, **Atividades** (RN04, RN05), **Estoque** (RN06, RN07), **Dashboard** (RN08) e **Alertas Climáticos** com previsão real do Open-Meteo (RN09). Diário de Campo, Usuários e Relatórios ainda usam os dados fictícios de `frontend/src/app/data/mockData.ts`.
+> Já integrados à API: **Login** (JWT), **Talhões**, **Atividades** (RN04, RN05), **Estoque** (RN06, RN07), **Dashboard** (RN08), **Alertas Climáticos** com previsão real do Open-Meteo (RN09) e **Diário de Campo** (RN10). Usuários e Relatórios ainda usam os dados fictícios de `frontend/src/app/data/mockData.ts`.
 
 ## 🏗️ Arquitetura
 
@@ -137,7 +137,7 @@ agro-sense/
 │   │   ├── docs/openapi.ts      # Especificação exibida em /api/docs
 │   │   ├── lib/                 # prisma.ts, token.ts (JWT), env.ts, AppError.ts
 │   │   ├── middlewares/         # autenticar, exigirPerfil, tratarErros
-│   │   └── modules/             # auth/, talhoes/, atividades/, insumos/, dashboard/, alertas/, usuarios/ (routes, controller, service, schema)
+│   │   └── modules/             # auth/, talhoes/, atividades/, insumos/, dashboard/, alertas/, diario/, usuarios/ (routes, controller, service, schema)
 │   ├── prisma.config.ts         # Configuração do Prisma (schema, migrations, seed)
 │   ├── .env.example             # PORT, CORS_ORIGIN, DATABASE_URL, JWT_SECRET
 │   ├── package.json

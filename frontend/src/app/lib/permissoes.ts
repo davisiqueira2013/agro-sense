@@ -8,3 +8,7 @@ export const permissoes = (perfil: Perfil) => ({
   /** Excluir registros. */
   podeExcluir: perfil === 'ADMIN',
 });
+
+/** RN10 — registro do diário: só o autor ou um ADMIN altera/exclui. */
+export const podeAlterarRegistro = (usuario: { id: number; perfil: Perfil }, autorId: number) =>
+  usuario.perfil === 'ADMIN' || (usuario.perfil === 'TECNICO' && usuario.id === autorId);
