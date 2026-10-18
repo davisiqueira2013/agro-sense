@@ -143,18 +143,21 @@ export type Usuario = {
   status: 'Ativo' | 'Inativo';
 };
 
-export type IndicadorDashboard = {
-  titulo: string;
-  valor: string;
-  detalhe: string;
-  tone: Tone;
-  icone: 'talhoes' | 'alertas' | 'gastos' | 'insumos';
+export type Severidade = 'CRITICO' | 'ATENCAO' | 'AVISO';
+
+/** GET /api/dashboard/resumo — indicadores calculados pela API (RN08). */
+export type ResumoDashboard = {
+  data: string;
+  talhoes: { total: number; ativos: number };
+  alertas: { ativos: number; porSeveridade: Record<Severidade, number> };
+  gastoMes: { valor: number; referencia: string };
+  insumos: { criticos: number; emAtencao: number };
+  atividades: { atrasadas: number; hoje: number };
+  alertasRapidos: { id: number; titulo: string; severidade: Severidade; talhoes: string[]; todaFazenda: boolean }[];
 };
 
-export type CustoMensal = {
-  mes: string;
-  valor: number;
-};
+/** GET /api/dashboard/custos — um item por mês. */
+export type CustoMensal = Record<CategoriaInsumo, number> & { mes: string; rotulo: string; total: number };
 
 export type Perfil = 'ADMIN' | 'TECNICO' | 'LEITOR';
 

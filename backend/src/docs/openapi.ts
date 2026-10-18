@@ -17,6 +17,7 @@ export const openapi = {
     { name: 'Talhões', description: 'Áreas de cultivo da fazenda (RN03)' },
     { name: 'Atividades', description: 'Operações de campo (RN04, RN05)' },
     { name: 'Estoque', description: 'Insumos e movimentações (RN06, RN07)' },
+    { name: 'Dashboard', description: 'Indicadores calculados no backend (RN08)' },
     { name: 'Usuários', description: 'Usuários do sistema' },
   ],
   components: {
@@ -359,6 +360,23 @@ export const openapi = {
         security: [{ bearerAuth: [] }],
         requestBody: { required: true, content: { 'application/json': { schema: { $ref: '#/components/schemas/MovimentacaoEntrada' } } } },
         responses: { '201': { description: 'Insumo com o novo saldo', content: { 'application/json': { schema: { $ref: '#/components/schemas/Insumo' } } } }, '400': { description: 'Quantidade inválida', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } }, '422': { description: 'Saldo insuficiente (RN06)', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } } },
+      },
+    },
+    '/dashboard/resumo': {
+      get: {
+        tags: ['Dashboard'],
+        summary: 'Indicadores: talhões, alertas ativos, gasto do mês, insumos críticos, atividades e alertas rápidos',
+        security: [{ bearerAuth: [] }],
+        responses: { '200': { description: 'Resumo calculado a partir do banco' } },
+      },
+    },
+    '/dashboard/custos': {
+      get: {
+        tags: ['Dashboard'],
+        summary: 'Custos de compra por mês e categoria de insumo (soma das ENTRADAS)',
+        security: [{ bearerAuth: [] }],
+        parameters: [{ name: 'meses', in: 'query', schema: { type: 'integer', default: 6, minimum: 1, maximum: 24 } }],
+        responses: { '200': { description: 'Série mensal com SEMENTES, FERTILIZANTES, DEFENSIVOS, COMBUSTIVEL e total' } },
       },
     },
     '/usuarios/responsaveis': {
