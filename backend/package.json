@@ -1,7 +1,7 @@
 {
   "name": "agro-sense-backend",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "API REST do Agro Sense (Node.js + Express + TypeScript)",
   "type": "module",
   "engines": {
@@ -20,7 +20,8 @@
     "db:reset": "prisma migrate reset --force",
     "db:studio": "prisma studio",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "start:prod": "prisma migrate deploy && tsx prisma/seed.ts --se-vazio && node dist/server.js"
   },
   "dependencies": {
     "@prisma/adapter-pg": "7.10.0",
