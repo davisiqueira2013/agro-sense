@@ -5,7 +5,8 @@
 // "atrasado" e o gráfico dos últimos 6 meses façam sentido em qualquer data.
 
 import 'dotenv/config';
-import { pathToFileURL } from 'node:url';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import bcrypt from 'bcryptjs';
 import { prisma } from '../src/lib/prisma.js';
 import { gerar as gerarRelatorio } from '../src/modules/relatorios/relatorios.service.js';
@@ -182,7 +183,12 @@ export async function popular() {
 
 // Executado pelo "npm run db:seed": apaga, popula e encerra a conexão.
 // Quando importado pelos testes, só exporta popular().
-if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+// A comparação ignora maiúsculas e a extensão porque, no Windows, o terminal pode
+// escrever a letra do disco como "c:" ou "C:".
+const semExtensao = (arquivo: string) => path.resolve(arquivo).replace(/\.[cm]?[jt]s$/, '').toLowerCase();
+const executadoDireto = Boolean(process.argv[1]) && semExtensao(process.argv[1]) === semExtensao(fileURLToPath(import.meta.url));
+
+if (executadoDireto) {
   // --se-vazio: só popula um banco novo (usado na publicação, para não apagar dados a cada deploy).
   const seVazio = process.argv.includes('--se-vazio');
   (seVazio ? prisma.usuario.count() : Promise.resolve(0))

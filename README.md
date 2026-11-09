@@ -145,7 +145,7 @@ npm test
 
 ## 🌐 Publicação
 
-O arquivo `render.yaml` publica banco, API e frontend no plano gratuito do Render em poucos cliques. Veja o passo a passo em [DEPLOY.md](DEPLOY.md).
+O arquivo `render.yaml` publica o sistema no plano gratuito do Render em poucos cliques: um banco PostgreSQL e um serviço web em que a API também entrega o site, no mesmo endereço. Veja o passo a passo em [DEPLOY.md](DEPLOY.md).
 
 ## 📁 Estrutura do repositório
 

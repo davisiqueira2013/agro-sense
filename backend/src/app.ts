@@ -1,3 +1,5 @@
+import { existsSync } from 'node:fs';
+import path from 'node:path';
 import cors from 'cors';
 import express from 'express';
 import swaggerUi from 'swagger-ui-express';
@@ -20,7 +22,7 @@ export function criarApp() {
   const app = express();
 
   // CORS_ORIGIN aceita uma ou mais origens separadas por vírgula.
-  // Um host sem protocolo (ex.: agro-sense-web.onrender.com, preenchido pelo render.yaml) vira https://host.
+  // Um host sem protocolo (ex.: agro-sense.onrender.com) vira https://host.
   const origens = (process.env.CORS_ORIGIN ?? 'http://localhost:5173')
     .split(',')
     .map((origem) => origem.trim())
@@ -64,6 +66,18 @@ export function criarApp() {
   app.use('/api/diario', diarioRoutes);
   app.use('/api/usuarios', usuariosRoutes);
   app.use('/api/relatorios', relatoriosRoutes);
+
+  // Rota da API inexistente: sempre 404 em JSON, mesmo quando o frontend é servido junto.
+  app.use('/api', rotaNaoEncontrada);
+
+  // Publicação: com FRONTEND_DIST definido, a própria API entrega o site (build do Vite).
+  // Frontend e API ficam no mesmo endereço, então não há CORS nem URL da API para configurar.
+  const pastaFrontend = process.env.FRONTEND_DIST ? path.resolve(process.env.FRONTEND_DIST) : null;
+  if (pastaFrontend && existsSync(path.join(pastaFrontend, 'index.html'))) {
+    app.use(express.static(pastaFrontend, { index: false, maxAge: '1h' }));
+    // Qualquer outro GET devolve o index.html (aplicação de página única).
+    app.get(/.*/, (_req, res) => res.sendFile(path.join(pastaFrontend, 'index.html')));
+  }
 
   app.use(rotaNaoEncontrada);
   app.use(tratarErros);
