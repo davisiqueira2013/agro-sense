@@ -95,7 +95,7 @@ export function RelatoriosPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {relatorios.map((r) => (
-            <Card key={r.id} className="p-5 flex justify-between items-center gap-3 hover:border-[#5C8065] transition-colors">
+            <Card key={r.id} className="p-4 sm:p-5 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 hover:border-[#5C8065] transition-colors">
               <div className="flex items-center gap-4 min-w-0">
                 <div className="p-3 bg-[#122216] border border-[#1A2E20] rounded-lg text-green-500 shrink-0">
                   <FileText size={24} />
@@ -110,7 +110,7 @@ export function RelatoriosPage() {
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-1 shrink-0">
+              <div className="flex items-center justify-end gap-1 shrink-0 max-sm:border-t max-sm:border-[#1A2E20] max-sm:pt-2">
                 <button
                   type="button"
                   aria-label={`Baixar ${r.titulo}`}

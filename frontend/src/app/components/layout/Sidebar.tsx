@@ -1,4 +1,4 @@
-import { Leaf, LogOut } from 'lucide-react';
+import { Leaf, LogOut, X } from 'lucide-react';
 import type { MenuItem } from '../../navigation';
 import type { TabId } from '../../types';
 import { Avatar } from '../shared/Avatar';
@@ -12,11 +12,26 @@ type SidebarProps = {
   /** Contadores exibidos ao lado de itens do menu (ex.: alertas ativos). */
   badges?: Partial<Record<TabId, number>>;
   onSair: () => void;
+  /** Celular/tablet: menu aberto sobre a tela. No computador o menu fica sempre visível. */
+  aberto: boolean;
+  onFechar: () => void;
 };
 
-export function Sidebar({ abaAtual, itens, onTrocarAba, usuario, badges = {}, onSair }: SidebarProps) {
+export function Sidebar({ abaAtual, itens, onTrocarAba, usuario, badges = {}, onSair, aberto, onFechar }: SidebarProps) {
   return (
-    <aside className="w-64 bg-[#0A120C] border-r border-[#1A2E20] flex flex-col h-screen fixed left-0 top-0 z-20">
+    <>
+    {/* Fundo escurecido atrás do menu aberto no celular; tocar fora fecha o menu. */}
+    <div
+      aria-hidden="true"
+      onClick={onFechar}
+      className={`fixed inset-0 bg-black/60 z-30 lg:hidden transition-opacity ${aberto ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+    />
+    <aside
+      id="menu-principal"
+      className={`w-72 lg:w-64 bg-[#0A120C] border-r border-[#1A2E20] flex flex-col h-dvh fixed left-0 top-0 z-40 transition-transform duration-200 lg:translate-x-0 ${
+        aberto ? 'translate-x-0' : '-translate-x-full'
+      }`}
+    >
       <div className="flex items-center gap-3 p-6 border-b border-[#1A2E20]">
         <div className="p-2 border border-[#1A2E20] rounded-lg bg-[#0C170F]">
           <Leaf className="w-5 h-5 text-green-500" />
@@ -25,6 +40,14 @@ export function Sidebar({ abaAtual, itens, onTrocarAba, usuario, badges = {}, on
           <h2 className="text-white font-bold text-base leading-tight font-mono">Agro Sense</h2>
           <p className="text-[#5C8065] text-xs font-mono">{usuario.fazenda}</p>
         </div>
+        <button
+          type="button"
+          onClick={onFechar}
+          aria-label="Fechar menu"
+          className="ml-auto p-2 text-gray-400 hover:text-white hover:bg-[#122216] rounded-lg cursor-pointer lg:hidden"
+        >
+          <X size={20} />
+        </button>
       </div>
 
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
@@ -35,7 +58,10 @@ export function Sidebar({ abaAtual, itens, onTrocarAba, usuario, badges = {}, on
             <button
               key={item.id}
               type="button"
-              onClick={() => onTrocarAba(item.id)}
+              onClick={() => {
+                onTrocarAba(item.id);
+                onFechar();
+              }}
               aria-current={ativo ? 'page' : undefined}
               className={`w-full flex items-center justify-between px-4 py-3 rounded-lg border transition-colors cursor-pointer ${
                 ativo
@@ -74,5 +100,6 @@ export function Sidebar({ abaAtual, itens, onTrocarAba, usuario, badges = {}, on
         </button>
       </div>
     </aside>
+    </>
   );
 }

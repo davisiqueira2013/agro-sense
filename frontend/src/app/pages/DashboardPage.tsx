@@ -96,7 +96,7 @@ export function DashboardPage({ onVerAlertas, onVerAtividades }: DashboardPagePr
         <button
           type="button"
           onClick={onVerAtividades}
-          className="w-full text-left flex items-center gap-3 px-4 py-3 rounded-xl border border-[#1A2E20] bg-[#0A140D] hover:border-[#5C8065] cursor-pointer font-mono text-sm"
+          className="w-full text-left flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 rounded-xl border border-[#1A2E20] bg-[#0A140D] hover:border-[#5C8065] cursor-pointer font-mono text-sm"
         >
           {atrasadas > 0 && (
             <span className="flex items-center gap-2 text-red-400">
@@ -106,7 +106,7 @@ export function DashboardPage({ onVerAlertas, onVerAtividades }: DashboardPagePr
           {resumo.atividades.hoje > 0 && (
             <span className="text-yellow-500">{plural(resumo.atividades.hoje, 'atividade prevista para hoje', 'atividades previstas para hoje')}</span>
           )}
-          <span className="ml-auto text-xs text-[#5C8065]">Ver atividades →</span>
+          <span className="sm:ml-auto text-xs text-[#5C8065]">Ver atividades →</span>
         </button>
       )}
 

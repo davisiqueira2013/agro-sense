@@ -94,16 +94,16 @@ export function EstoquePage() {
         <DataTable colunas={['INSUMO', 'CATEGORIA', 'QUANTIDADE', 'CUSTO UNIT.', 'STATUS', 'AÇÕES']}>
           {insumos.map((i) => (
             <tr key={i.id} className="hover:bg-[#122216]/30 transition-colors">
-              <td className="py-3 pr-3 text-white font-semibold">{i.nome}</td>
-              <td className="py-3 pr-3 text-gray-400">{nomeDaCategoria[i.categoria]}</td>
-              <td className="py-3 pr-3 whitespace-nowrap">
+              <td data-label="Insumo" className="py-3 pr-3 text-white font-semibold">{i.nome}</td>
+              <td data-label="Categoria" className="py-3 pr-3 text-gray-400">{nomeDaCategoria[i.categoria]}</td>
+              <td data-label="Quantidade" className="py-3 pr-3 whitespace-nowrap">
                 <span className="text-white">{formatarNumero(i.quantidade)} {i.unidade}</span>
                 <p className="text-[11px] text-[#5C8065]">mín. {formatarNumero(i.estoqueMinimo)} {i.unidade}</p>
               </td>
-              <td className="py-3 pr-3 text-gray-400 whitespace-nowrap">{formatarMoeda(i.custoUnitario)}</td>
-              <td className={`py-3 pr-3 font-bold ${toneClasses[toneDoInsumo[i.status]].text}`}>{nomeDoStatusInsumo[i.status]}</td>
+              <td data-label="Custo unit." className="py-3 pr-3 text-gray-400 whitespace-nowrap">{formatarMoeda(i.custoUnitario)}</td>
+              <td data-label="Status" className={`py-3 pr-3 font-bold ${toneClasses[toneDoInsumo[i.status]].text}`}>{nomeDoStatusInsumo[i.status]}</td>
               <td className="py-2">
-                <div className="flex items-center gap-1">
+                <div className="flex flex-wrap items-center justify-end md:justify-start gap-1 max-md:pt-1">
                   {podeEditar && (
                     <>
                       <button type="button" onClick={() => setMovimento({ insumo: i, tipo: 'ENTRADA' })}
