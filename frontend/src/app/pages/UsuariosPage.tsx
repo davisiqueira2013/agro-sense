@@ -88,7 +88,7 @@ export function UsuariosPage() {
               const ehVoce = u.id === logado!.id;
               return (
                 <tr key={u.id} className="hover:bg-[#122216]/30 transition-colors">
-                  <td className="py-3 pr-3">
+                  <td data-label="Nome" className="py-3 pr-3">
                     <span className="flex items-center gap-3">
                       <Avatar nome={u.nome} apagado={!u.ativo} />
                       <span className={u.ativo ? 'text-white font-semibold' : 'text-gray-500 font-semibold'}>
@@ -96,12 +96,12 @@ export function UsuariosPage() {
                       </span>
                     </span>
                   </td>
-                  <td className="py-3 pr-3 text-gray-400">{u.email}</td>
-                  <td className="py-3 pr-3 text-gray-300">{u.cargo}</td>
-                  <td className="py-3 pr-3">
+                  <td data-label="E-mail" className="py-3 pr-3 text-gray-400 break-all">{u.email}</td>
+                  <td data-label="Cargo" className="py-3 pr-3 text-gray-300">{u.cargo}</td>
+                  <td data-label="Perfil" className="py-3 pr-3">
                     <span className={`px-2 py-1 rounded text-xs border bg-[#08100A] ${corDoPerfil[u.perfil]}`}>{nomeDoPerfil[u.perfil]}</span>
                   </td>
-                  <td className="py-3 pr-3">
+                  <td data-label="Status" className="py-3 pr-3">
                     <span className={`px-2 py-1 rounded text-xs font-bold border ${u.ativo ? 'bg-[#122216] border-green-900/50 text-green-500' : 'bg-[#08100A] border-[#1A2E20] text-gray-500'}`}>
                       {u.ativo ? 'Ativo' : 'Inativo'}
                     </span>

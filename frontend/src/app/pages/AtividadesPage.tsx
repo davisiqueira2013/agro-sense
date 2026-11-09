@@ -120,24 +120,24 @@ export function AtividadesPage() {
             const ocupado = processando === a.id;
             return (
               <tr key={a.id} className="hover:bg-[#122216]/30 transition-colors align-top">
-                <td className={`py-4 pr-3 ${toneClasses[toneDaSituacao[a.situacao]].text}`}>
+                <td data-label="Status" className={`py-4 pr-3 ${toneClasses[toneDaSituacao[a.situacao]].text}`}>
                   <span className="flex items-center gap-2 whitespace-nowrap">
                     {iconeDaSituacao[a.situacao]} {nomeDaSituacao[a.situacao]}
                   </span>
                 </td>
-                <td className="py-4 pr-3">
+                <td data-label="Tipo" className="py-4 pr-3">
                   <span className="text-white font-semibold">{nomeDoTipoAtividade[a.tipo]}</span>
                   {a.observacao && <p className="text-xs text-[#5C8065] mt-1 max-w-56 truncate" title={a.observacao}>{a.observacao}</p>}
                 </td>
-                <td className="py-4 pr-3 text-gray-300 whitespace-nowrap">{a.talhao.nome}</td>
-                <td className="py-4 pr-3 text-[#5C8065] whitespace-nowrap">
+                <td data-label="Talhão" className="py-4 pr-3 text-gray-300 whitespace-nowrap">{a.talhao.nome}</td>
+                <td data-label="Data prevista" className="py-4 pr-3 text-[#5C8065] whitespace-nowrap">
                   {rotuloDoDia(a.dataPrevista)}
                   {a.dataConclusao && <p className="text-xs text-green-600 mt-1">concluída {formatarData(a.dataConclusao)}</p>}
                 </td>
-                <td className="py-4 pr-3 text-gray-300 whitespace-nowrap">{a.responsavel.nome}</td>
+                <td data-label="Responsável" className="py-4 pr-3 text-gray-300 whitespace-nowrap">{a.responsavel.nome}</td>
                 {podeEditar && (
                   <td className="py-3">
-                    <div className="flex items-center gap-1">
+                    <div className="flex flex-wrap items-center justify-end md:justify-start gap-1 max-md:pt-1">
                       {a.status === 'AGENDADA' && (
                         <button type="button" disabled={ocupado} onClick={() => alterarStatus(a, 'EM_ANDAMENTO')}
                           className={`${botaoAcao} text-yellow-500 hover:border-yellow-900/60 hover:bg-yellow-950/30`}>
