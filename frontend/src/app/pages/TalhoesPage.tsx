@@ -115,12 +115,12 @@ export function TalhoesPage() {
         <DataTable colunas={['NOME', 'MUNICÍPIO', 'CULTURA', 'ÁREA', 'STATUS', 'ATIVIDADES', '']}>
           {talhoes.map((t) => (
             <tr key={t.id} className="hover:bg-[#122216]/30 transition-colors">
-              <td className="py-3 text-white font-semibold">{t.nome}</td>
-              <td className="py-3 text-gray-400">{t.municipio}, {t.uf}</td>
-              <td className="py-3 text-gray-300">{t.cultura}</td>
-              <td className="py-3 text-white">{formatarNumero(t.areaHa)} ha</td>
-              <td className="py-3">{badge(t)}</td>
-              <td className="py-3 text-[#5C8065]">{t._count.atividades}</td>
+              <td data-label="Nome" className="py-3 text-white font-semibold">{t.nome}</td>
+              <td data-label="Município" className="py-3 text-gray-400">{t.municipio}, {t.uf}</td>
+              <td data-label="Cultura" className="py-3 text-gray-300">{t.cultura}</td>
+              <td data-label="Área" className="py-3 text-white">{formatarNumero(t.areaHa)} ha</td>
+              <td data-label="Status" className="py-3">{badge(t)}</td>
+              <td data-label="Atividades" className="py-3 text-[#5C8065]">{t._count.atividades}</td>
               <td className="py-3">{acoes(t)}</td>
             </tr>
           ))}

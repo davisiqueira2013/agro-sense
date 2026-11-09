@@ -21,6 +21,7 @@ export default function App() {
   const { usuario, carregando, logout } = useAuth();
   const [abaAtual, setAbaAtual] = useState<TabId>('Dashboard');
   const [alertasAtivos, setAlertasAtivos] = useState(0);
+  const [menuAberto, setMenuAberto] = useState(false);
 
   // Contador de alertas ativos no menu e no sino (GET /api/alertas).
   const atualizarContador = useCallback(() => {
@@ -75,10 +76,12 @@ export default function App() {
         usuario={{ nome: usuario.nome, perfil: nomeDoPerfil[usuario.perfil], fazenda: NOME_FAZENDA }}
         badges={{ 'Alertas Climáticos': alertasAtivos }}
         onSair={sair}
+        aberto={menuAberto}
+        onFechar={() => setMenuAberto(false)}
       />
-      <main className="flex-1 ml-64 min-h-screen bg-[#08100A] text-gray-200">
-        <Header abaAtual={aba} nomeUsuario={usuario.nome} temNotificacao={alertasAtivos > 0} />
-        <div className="p-8 max-w-7xl mx-auto">{paginas[aba]}</div>
+      <main className="flex-1 min-w-0 lg:ml-64 min-h-screen bg-[#08100A] text-gray-200">
+        <Header abaAtual={aba} nomeUsuario={usuario.nome} temNotificacao={alertasAtivos > 0} onAbrirMenu={() => setMenuAberto(true)} />
+        <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">{paginas[aba]}</div>
       </main>
     </div>
   );

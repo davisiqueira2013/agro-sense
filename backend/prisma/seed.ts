@@ -5,6 +5,7 @@
 // "atrasado" e o gráfico dos últimos 6 meses façam sentido em qualquer data.
 
 import 'dotenv/config';
+import { pathToFileURL } from 'node:url';
 import bcrypt from 'bcryptjs';
 import { prisma } from '../src/lib/prisma.js';
 import { gerar as gerarRelatorio } from '../src/modules/relatorios/relatorios.service.js';
@@ -39,7 +40,8 @@ async function limpar() {
   await prisma.usuario.deleteMany();
 }
 
-async function main() {
+/** Apaga e recria todos os dados de exemplo. Também usado pelos testes automatizados. */
+export async function popular() {
   await limpar();
   const senhaHash = await bcrypt.hash(SENHA_PADRAO, 10);
 
@@ -172,13 +174,25 @@ async function main() {
     alertas: await prisma.alertaClimatico.count(),
     relatorios: await prisma.relatorio.count(),
   };
-  console.log('Seed concluído:', contagem);
-  console.log(`Login de teste: rodrigo@agrosense.com.br / ${SENHA_PADRAO} (mesma senha para todos os usuários)`);
+  if (process.env.NODE_ENV !== 'test') {
+    console.log('Seed concluído:', contagem);
+    console.log(`Login de teste: rodrigo@agrosense.com.br / ${SENHA_PADRAO} (mesma senha para todos os usuários)`);
+  }
 }
 
-main()
-  .catch((erro) => {
-    console.error(erro);
-    process.exitCode = 1;
-  })
-  .finally(() => prisma.$disconnect());
+// Executado pelo "npm run db:seed": apaga, popula e encerra a conexão.
+// Quando importado pelos testes, só exporta popular().
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  // --se-vazio: só popula um banco novo (usado na publicação, para não apagar dados a cada deploy).
+  const seVazio = process.argv.includes('--se-vazio');
+  (seVazio ? prisma.usuario.count() : Promise.resolve(0))
+    .then((usuarios) => {
+      if (usuarios > 0) return console.log('Banco já tem dados; seed ignorado (--se-vazio).');
+      return popular();
+    })
+    .catch((erro) => {
+      console.error(erro);
+      process.exitCode = 1;
+    })
+    .finally(() => prisma.$disconnect());
+}

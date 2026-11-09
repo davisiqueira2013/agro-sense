@@ -20,7 +20,12 @@ export function criarApp() {
   const app = express();
 
   // CORS_ORIGIN aceita uma ou mais origens separadas por vírgula.
-  const origens = (process.env.CORS_ORIGIN ?? 'http://localhost:5173').split(',').map((origem) => origem.trim());
+  // Um host sem protocolo (ex.: agro-sense-web.onrender.com, preenchido pelo render.yaml) vira https://host.
+  const origens = (process.env.CORS_ORIGIN ?? 'http://localhost:5173')
+    .split(',')
+    .map((origem) => origem.trim())
+    .filter(Boolean)
+    .map((origem) => (/^https?:\/\//.test(origem) ? origem : `https://${origem}`));
   app.use(cors({ origin: origens }));
   app.use(express.json());
 

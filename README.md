@@ -120,7 +120,32 @@ Acesse http://localhost:5173 e entre com um dos usuários da tabela acima (ex.: 
 | `npm run dev:api` | API em modo desenvolvimento (recarrega ao salvar) |
 | `npm run dev:web` | Frontend em modo desenvolvimento |
 | `npm run build` | Compila backend e frontend |
+| `npm test` | Roda os testes automatizados da API |
 | `npm run lint` | Verifica o código do frontend com ESLint |
+
+## 🧪 Testes automatizados
+
+A API tem 61 testes automatizados (Vitest + Supertest) que cobrem as regras de negócio RN01 a RN12, a autenticação, os perfis de acesso e a integração entre módulos. Eles rodam contra um PostgreSQL real, em um banco separado (`agrosense_test`), criado e migrado automaticamente; o banco de desenvolvimento não é tocado. O Open-Meteo é simulado nos testes, então não é preciso internet.
+
+Com o banco do Docker no ar (`npm run db:up`):
+
+```bash
+npm test
+```
+
+| Arquivo | O que cobre |
+| --- | --- |
+| `backend/tests/auth-perfis.test.ts` | RN01 (login, token) e RN02 (perfis) |
+| `backend/tests/talhoes-atividades.test.ts` | RN03 (talhões), RN04 (ciclo da atividade) e RN05 (pulverização × vento) |
+| `backend/tests/estoque-dashboard.test.ts` | RN06 (movimentação e concorrência), RN07 (status) e RN08 (Dashboard) |
+| `backend/tests/alertas.test.ts` | RN09 (alertas da previsão, limites e falha do serviço externo) |
+| `backend/tests/diario-usuarios.test.ts` | RN10 (autoria do diário) e RN11 (gestão de usuários) |
+| `backend/tests/relatorios.test.ts` | RN12 (geração, download e permissões dos relatórios em PDF) |
+| `backend/tests/sistema.test.ts` | Health check, documentação, CORS e formato de erro |
+
+## 🌐 Publicação
+
+O arquivo `render.yaml` publica banco, API e frontend no plano gratuito do Render em poucos cliques. Veja o passo a passo em [DEPLOY.md](DEPLOY.md).
 
 ## 📁 Estrutura do repositório
 

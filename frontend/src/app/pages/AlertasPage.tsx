@@ -121,8 +121,8 @@ export function AlertasPage({ onAlteracao }: Props) {
           const tone = toneClasses[toneDaSeveridade[a.severidade]];
           const ativo = a.situacao === 'ATIVO';
           return (
-            <Card key={a.id} className={`p-6 flex gap-4 ${ativo ? tone.border : 'opacity-70'}`}>
-              <div className={`p-3 rounded-full h-fit border ${tone.iconBox}`}>
+            <Card key={a.id} className={`p-4 sm:p-6 flex flex-col sm:flex-row gap-3 sm:gap-4 ${ativo ? tone.border : 'opacity-70'}`}>
+              <div className={`p-3 rounded-full h-fit w-fit border max-sm:hidden ${tone.iconBox}`}>
                 {a.severidade === 'CRITICO' ? <AlertCircle size={24} /> : iconeDoTipo[a.tipo]}
               </div>
               <div className="flex-1 min-w-0">
@@ -145,7 +145,7 @@ export function AlertasPage({ onAlteracao }: Props) {
               </div>
               {podeEditar && ativo && (
                 <button type="button" onClick={() => encerrar(a)} disabled={encerrando === a.id}
-                  className="self-start shrink-0 px-3 py-1.5 rounded-md text-xs font-mono text-gray-400 border border-[#1A2E20] hover:text-white hover:bg-[#122216] cursor-pointer disabled:opacity-50">
+                  className="sm:self-start shrink-0 px-3 py-2 sm:py-1.5 rounded-md text-xs font-mono text-gray-400 border border-[#1A2E20] hover:text-white hover:bg-[#122216] cursor-pointer disabled:opacity-50">
                   {encerrando === a.id ? 'Encerrando...' : 'Encerrar'}
                 </button>
               )}
