@@ -1,7 +1,7 @@
 {
   "name": "agro-sense",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Agro Sense — sistema web de gestão agrícola (monorepo: frontend + backend)",
   "scripts": {
     "install:all": "npm --prefix backend install && npm --prefix frontend install",

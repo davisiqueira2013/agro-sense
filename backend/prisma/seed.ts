@@ -180,10 +180,16 @@ export async function popular() {
   }
 }
 
-// Executado pelo "npm run db:seed": popula e encerra a conexão.
+// Executado pelo "npm run db:seed": apaga, popula e encerra a conexão.
 // Quando importado pelos testes, só exporta popular().
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  popular()
+  // --se-vazio: só popula um banco novo (usado na publicação, para não apagar dados a cada deploy).
+  const seVazio = process.argv.includes('--se-vazio');
+  (seVazio ? prisma.usuario.count() : Promise.resolve(0))
+    .then((usuarios) => {
+      if (usuarios > 0) return console.log('Banco já tem dados; seed ignorado (--se-vazio).');
+      return popular();
+    })
     .catch((erro) => {
       console.error(erro);
       process.exitCode = 1;

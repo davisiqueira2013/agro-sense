@@ -143,6 +143,10 @@ npm test
 | `backend/tests/relatorios.test.ts` | RN12 (geração, download e permissões dos relatórios em PDF) |
 | `backend/tests/sistema.test.ts` | Health check, documentação, CORS e formato de erro |
 
+## 🌐 Publicação
+
+O arquivo `render.yaml` publica banco, API e frontend no plano gratuito do Render em poucos cliques. Veja o passo a passo em [DEPLOY.md](DEPLOY.md).
+
 ## 📁 Estrutura do repositório
 
 ```
