@@ -3,11 +3,12 @@
 /**
  * Endereço da API. VITE_API_URL aceita:
  * - a URL completa, em desenvolvimento: http://localhost:3333/api
- * - só o host do serviço publicado (preenchido pelo render.yaml): agro-sense-api.onrender.com
+ * - um caminho relativo, quando a API serve o próprio site (publicação): /api
+ * - só o host de uma API publicada em outro endereço: minha-api.onrender.com
  */
 function enderecoDaApi(valor: string | undefined) {
   if (!valor) return 'http://localhost:3333/api';
-  if (/^https?:\/\//.test(valor)) return valor.replace(/\/$/, '');
+  if (/^https?:\/\//.test(valor) || valor.startsWith('/')) return valor.replace(/\/$/, '');
   return `https://${valor}/api`;
 }
 
