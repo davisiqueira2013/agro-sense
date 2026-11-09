@@ -5,7 +5,7 @@ export const openapi = {
   openapi: '3.0.3',
   info: {
     title: 'Agro Sense API',
-    version: '0.2.0',
+    version: '0.3.0',
     description:
       'API REST do Agro Sense. Todas as rotas, exceto /auth/login e /health, exigem o cabeçalho ' +
       '`Authorization: Bearer <token>`. Erros seguem o formato `{ erro, codigo, detalhes? }`.',
@@ -21,6 +21,7 @@ export const openapi = {
     { name: 'Alertas', description: 'Alertas climáticos e previsão do tempo via Open-Meteo (RN09)' },
     { name: 'Diário de Campo', description: 'Registros agronômicos da equipe (RN10)' },
     { name: 'Usuários', description: 'Gestão de usuários e perfis — somente ADMIN (RN02, RN11)' },
+    { name: 'Relatórios', description: 'Relatórios em PDF gerados no servidor (RN12)' },
   ],
   components: {
     securitySchemes: {
@@ -450,6 +451,43 @@ export const openapi = {
         summary: 'Encerra um alerta (ADMIN, TECNICO)',
         security: [{ bearerAuth: [] }],
         responses: { '200': { description: 'Alerta encerrado', content: { 'application/json': { schema: { $ref: '#/components/schemas/AlertaClimatico' } } } }, '404': { description: 'Não encontrado', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } }, '422': { description: 'Já encerrado', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } } },
+      },
+    },
+    '/relatorios': {
+      get: {
+        tags: ['Relatórios'],
+        summary: 'Lista os relatórios gerados (mais recentes primeiro, sem o conteúdo do PDF)',
+        security: [{ bearerAuth: [] }],
+        responses: { '200': { description: 'Relatórios com tipo, período, tamanho e autor' } },
+      },
+      post: {
+        tags: ['Relatórios'],
+        summary: 'Gera um relatório em PDF no servidor e o grava no banco (RN12) — ADMIN, TECNICO',
+        security: [{ bearerAuth: [] }],
+        requestBody: { required: true, content: { 'application/json': { schema: { type: 'object', required: ['tipo', 'inicio', 'fim'], properties: {
+            tipo: { type: 'string', enum: ['CUSTOS', 'ATIVIDADES', 'ESTOQUE'] },
+            inicio: { type: 'string', format: 'date', example: '2026-08-01' },
+            fim: { type: 'string', format: 'date', example: '2026-10-31' },
+          } } } } },
+        responses: { '201': { description: 'Relatório gerado' }, '400': { description: 'Dados inválidos', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } }, '403': { description: 'Perfil sem permissão', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } }, '422': { description: 'Período inválido (fim antes do início) ou maior que 366 dias', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } } },
+      },
+    },
+    '/relatorios/{id}/pdf': {
+      parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'integer' } }],
+      get: {
+        tags: ['Relatórios'],
+        summary: 'Baixa o PDF gravado do relatório',
+        security: [{ bearerAuth: [] }],
+        responses: { '200': { description: 'Arquivo PDF', content: { 'application/pdf': { schema: { type: 'string', format: 'binary' } } } }, '404': { description: 'Não encontrado', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } } },
+      },
+    },
+    '/relatorios/{id}': {
+      parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'integer' } }],
+      delete: {
+        tags: ['Relatórios'],
+        summary: 'Exclui um relatório — ADMIN',
+        security: [{ bearerAuth: [] }],
+        responses: { '204': { description: 'Excluído' }, '403': { description: 'Perfil sem permissão', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } }, '404': { description: 'Não encontrado', content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } } } },
       },
     },
     '/diario': {

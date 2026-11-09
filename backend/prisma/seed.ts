@@ -7,6 +7,7 @@
 import 'dotenv/config';
 import bcrypt from 'bcryptjs';
 import { prisma } from '../src/lib/prisma.js';
+import { gerar as gerarRelatorio } from '../src/modules/relatorios/relatorios.service.js';
 
 const SENHA_PADRAO = 'agrosense123';
 
@@ -155,6 +156,12 @@ async function main() {
     },
   });
 
+  // ---------- Relatórios (RN12): dois PDFs de exemplo gerados pelo próprio serviço ----------
+  const inicioTrimestre = new Date();
+  inicioTrimestre.setMonth(inicioTrimestre.getMonth() - 2, 1);
+  await gerarRelatorio({ tipo: 'CUSTOS', inicio: inicioTrimestre, fim: dia(0) }, rodrigo.id);
+  await gerarRelatorio({ tipo: 'ESTOQUE', inicio: mesAtras(0, 1), fim: dia(0) }, ana.id);
+
   const contagem = {
     usuarios: await prisma.usuario.count(),
     talhoes: await prisma.talhao.count(),
@@ -163,6 +170,7 @@ async function main() {
     insumos: await prisma.insumo.count(),
     movimentacoes: await prisma.movimentacao.count(),
     alertas: await prisma.alertaClimatico.count(),
+    relatorios: await prisma.relatorio.count(),
   };
   console.log('Seed concluído:', contagem);
   console.log(`Login de teste: rodrigo@agrosense.com.br / ${SENHA_PADRAO} (mesma senha para todos os usuários)`);
