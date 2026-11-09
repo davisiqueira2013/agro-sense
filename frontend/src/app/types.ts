@@ -173,10 +173,19 @@ export type ResultadoSincronizacao = {
   alertas: { criados: number; atualizados: number; encerrados: number };
 };
 
+export type TipoRelatorio = 'CUSTOS' | 'ATIVIDADES' | 'ESTOQUE';
+
+/** Relatório como devolvido por GET /api/relatorios (RN12). */
 export type Relatorio = {
-  nome: string;
-  data: string;
-  tamanho: string;
+  id: number;
+  tipo: TipoRelatorio;
+  titulo: string;
+  periodoInicio: string;
+  periodoFim: string;
+  arquivo: string;
+  tamanhoBytes: number;
+  geradoEm: string;
+  geradoPor: { id: number; nome: string };
 };
 
 /** Usuário como devolvido por GET /api/usuarios (ADMIN). */

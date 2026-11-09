@@ -206,8 +206,12 @@ model Relatorio {
   titulo        String
   periodoInicio DateTime
   periodoFim    DateTime
+  /// Nome sugerido para o download, ex.: relatorio-custos-2026-08-01-a-2026-10-31.pdf
   arquivo       String
   tamanhoBytes  Int
+  /// PDF gerado no servidor (RN12). Guardado no banco para que o download devolva
+  /// exatamente o documento emitido, mesmo que os dados mudem depois.
+  conteudo      Bytes
   geradoEm      DateTime      @default(now())
   geradoPorId   Int
 

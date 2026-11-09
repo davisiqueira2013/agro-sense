@@ -2,9 +2,9 @@
 
 Sistema web para **gestão agrícola**, desenvolvido como Projeto Integrador. Reúne em um único painel o que um produtor ou equipe de campo precisa no dia a dia: talhões, atividades, diário de campo, estoque de insumos, alertas climáticos, relatórios e usuários.
 
-> 🚧 **Fase 02 em andamento — integração frontend e backend.** Monorepo com frontend (React), backend (API REST em Node.js) e banco PostgreSQL via Docker.
+> ✅ **Versão final do semestre — frontend e backend integrados.** Monorepo com frontend (React), backend (API REST em Node.js) e banco PostgreSQL via Docker.
 >
-> Já integrados à API: **Login** (JWT), **Talhões**, **Atividades** (RN04, RN05), **Estoque** (RN06, RN07), **Dashboard** (RN08), **Alertas Climáticos** com previsão real do Open-Meteo (RN09) **Diário de Campo** (RN10) e **Usuários** (RN11). Só Relatórios ainda usa os dados fictícios de `frontend/src/app/data/mockData.ts`.
+> Já integrados à API: **Login** (JWT), **Talhões**, **Atividades** (RN04, RN05), **Estoque** (RN06, RN07), **Dashboard** (RN08), **Alertas Climáticos** com previsão real do Open-Meteo (RN09) **Diário de Campo** (RN10), **Usuários** (RN11) e **Relatórios em PDF** gerados no servidor (RN12).
 
 ## 🏗️ Arquitetura
 
@@ -27,7 +27,7 @@ Navegador (React SPA)  ──HTTP + JSON / JWT──▶  API REST (Express)  ─
 - **Diário de Campo** — anotações agronômicas da equipe
 - **Estoque de Insumos** — entradas, saídas e itens abaixo do mínimo
 - **Alertas Climáticos** — riscos meteorológicos por talhão
-- **Relatórios** — geração de relatórios em PDF
+- **Relatórios** — relatórios de custos, atividades e estoque em PDF, gerados no servidor (RN12)
 - **Usuários** — contas e perfis de acesso
 
 ## 🛠️ Tecnologias
@@ -151,7 +151,7 @@ agro-sense/
 │   │       ├── App.tsx          # Autenticação e navegação entre telas
 │   │       ├── pages/           # Uma tela por arquivo
 │   │       ├── components/      # layout/, shared/ e ui/ (shadcn)
-│   │       ├── data/mockData.ts # Dados fictícios (serão trocados pela API)
+│   │       ├── data/mockData.ts # Configurações fixas da interface (nome da fazenda)
 │   │       ├── lib/tones.ts     # Cores por status e severidade
 │   │       └── types.ts         # Tipos de domínio
 │   ├── .env.example             # VITE_API_URL
